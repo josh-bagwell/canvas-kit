@@ -40,11 +40,6 @@ export interface ButtonContainerProps extends Partial<SystemIconProps>, GrowthBe
    * @default 'start'
    */
   iconPosition?: IconPositions;
-  /**
-   * If set to `true`, transform the icon's x-axis to mirror the graphic
-   * @default false
-   */
-  shouldMirrorIcon?: boolean;
   children?: React.ReactNode;
 }
 
@@ -180,6 +175,8 @@ export const buttonStencil = createStencil({
         buttonColorPropVars.focus.icon,
         system.color.fg.strong
       ),
+      outline: `${px2rem(2)} solid transparent`,
+      outlineOffset: px2rem(2),
       ...focusRing({
         width: 2,
         separation: 2,
@@ -232,6 +229,24 @@ export const buttonStencil = createStencil({
         buttonColorPropVars.disabled.icon,
         system.color.fg.strong
       ),
+    },
+    // for Windows high contrast desktop themes
+    '@media (prefers-contrast: more)': {
+      // Toggle Buttons (Segmented Control)
+      '&[aria-pressed="true"]': {
+        outline: `${px2rem(2)} solid transparent`,
+        outlineOffset: `-${px2rem(1)}`,
+      },
+      // Toggle Buttons && Focus (Segmented Control)
+      '&[aria-pressed="true"]:focus-visible, &[aria-pressed="true"].focus': {
+        outline: `${px2rem(4)} double transparent`,
+        outlineOffset: 0,
+      },
+    },
+    // prevent ReactDOM 19 SVG issue https://github.com/Workday/canvas-kit/issues/3357.
+    // Can be removed when the ReactDOM 19 issue is fixed.
+    svg: {
+      pointerEvents: 'none',
     },
   }),
   modifiers: {
@@ -386,7 +401,6 @@ export const BaseButton = createComponent('button')({
       iconPosition,
       icon,
       colors,
-      shouldMirrorIcon = false,
       ...elemProps
     }: ButtonContainerProps,
     ref,

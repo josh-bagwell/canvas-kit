@@ -1,4 +1,3 @@
-import React from 'react';
 import {createSubcomponent} from '@workday/canvas-kit-react/common';
 
 import {FlexProps} from '@workday/canvas-kit-react/layout';
@@ -14,7 +13,7 @@ const formFieldGroupListStencil = createStencil({
   base: {
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: system.shape.x1,
+    borderRadius: system.shape.x1Half,
     gap: system.space.x2,
     padding: `${px2rem(10)} ${system.space.x3} ${system.space.x2}`,
     margin: `0 ${calc.negate(system.space.x3)}`,
@@ -24,11 +23,13 @@ const formFieldGroupListStencil = createStencil({
   modifiers: {
     error: {
       error: {
-        boxShadow: `inset 0 0 0 ${px2rem(2)} ${brand.error.base}`,
+        backgroundColor: brand.error.lightest,
+        boxShadow: `inset 0 0 0 ${px2rem(2)} ${brand.common.errorInner}`,
       },
-      alert: {
-        boxShadow: `inset 0 0 0 ${px2rem(1)} ${brand.alert.darkest}, inset 0 0 0 ${px2rem(3)} ${
-          brand.alert.base
+      caution: {
+        backgroundColor: brand.alert.lightest,
+        boxShadow: `inset 0 0 0 ${px2rem(1)} ${brand.common.alertOuter}, inset 0 0 0 ${px2rem(3)} ${
+          brand.common.alertInner
         }`,
       },
     },

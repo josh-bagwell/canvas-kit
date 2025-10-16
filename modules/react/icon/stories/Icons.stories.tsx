@@ -1,13 +1,20 @@
 import * as React from 'react';
 import {shieldIcon} from '@workday/canvas-accent-icons-web';
 import {benefitsIcon} from '@workday/canvas-applet-icons-web';
-import {CanvasGraphic, CanvasIconTypes} from '@workday/design-assets-types';
-
-import {colors} from '@workday/canvas-kit-react/tokens';
-import {AccentIcon, AppletIcon, SystemIcon, SystemIconCircle, Graphic} from '../index';
+import {CanvasIconTypes, CanvasGraphic} from '@workday/design-assets-types';
+import {
+  AccentIcon,
+  AppletIcon,
+  SystemIcon,
+  SystemIconCircle,
+  Graphic,
+  graphicImageStencil,
+  systemIconCircleStencil,
+} from '../index';
 import {activityStreamIcon} from '@workday/canvas-system-icons-web';
 
-import {base} from '@workday/canvas-tokens-web';
+import {system} from '@workday/canvas-tokens-web';
+import {createStyles, cssVar} from '@workday/canvas-kit-styling';
 
 const graphicExample: CanvasGraphic = {
   name: 'badgeAchievement',
@@ -17,10 +24,17 @@ const graphicExample: CanvasGraphic = {
   category: '',
   tags: [],
 };
+const graphicExampleWithURL = {
+  url: 'https://wd5.myworkday.com/wday/asset/canvas-graphics-web/5.0.7/wd-graphic-learning-welcome-desktop.svg',
+};
 
 export default {
   title: 'Tokens/Icon',
 };
+
+const customStyles = createStyles({
+  [graphicImageStencil.vars.height]: '105px',
+});
 
 export const AccentIconStory = {
   name: 'Accent Icon',
@@ -29,15 +43,15 @@ export const AccentIconStory = {
   render: () => (
     <div className="story">
       <AccentIcon icon={shieldIcon} />
-      <AccentIcon icon={shieldIcon} color={colors.pomegranate500} />
+      <AccentIcon icon={shieldIcon} color={system.color.static.red.strong} />
       <span
         style={{
-          backgroundColor: colors.blueberry500,
+          backgroundColor: cssVar(system.color.bg.primary.default),
           display: 'inline-block',
           verticalAlign: 'top',
         }}
       >
-        <AccentIcon icon={shieldIcon} color={colors.frenchVanilla100} transparent={true} />
+        <AccentIcon icon={shieldIcon} color={system.color.fg.inverse} transparent={true} />
       </span>
       <br />
       <AccentIcon icon={shieldIcon} size={80} />
@@ -66,47 +80,53 @@ export const SystemIconStory = {
   render: () => (
     <div className="story">
       <SystemIcon icon={activityStreamIcon} />
-      <SystemIcon icon={activityStreamIcon} color={base.berrySmoothie400} />
+      <SystemIcon icon={activityStreamIcon} color={system.color.static.green.default} />
       <SystemIcon
         icon={activityStreamIcon}
-        color={base.berrySmoothie400}
-        colorHover={base.berrySmoothie600}
+        color={system.color.static.green.default}
+        colorHover={system.color.static.green.stronger}
       />
       <SystemIcon
         className="custom-class"
         icon={activityStreamIcon}
-        accent={base.frenchVanilla100}
-        fill={base.blueberry500}
-        background={base.blueberry500}
+        accent={system.color.fg.primary.default}
+        fill={system.color.fg.primary.default}
+        background={system.color.fg.inverse}
       />
       <br />
-      <SystemIcon icon={activityStreamIcon} colorHover={base.cinnamon300} />
+      <SystemIcon icon={activityStreamIcon} colorHover={system.color.fg.critical.default} />
       <SystemIcon
         icon={activityStreamIcon}
-        color={base.blueberry500}
-        fillHover={base.chiliMango200}
-        accentHover={base.chiliMango400}
+        color={system.color.static.blue.default}
+        fillHover={system.color.static.amber.default}
+        accentHover={system.color.static.amber.default}
       />
       <SystemIcon
         className="custom-class"
         icon={activityStreamIcon}
-        accent={base.frenchVanilla100}
-        fill={base.blueberry500}
-        background={base.blueberry500}
-        fillHover={base.cantaloupe500}
-        accentHover={base.frenchVanilla100}
-        backgroundHover={base.cantaloupe500}
+        accent={system.color.static.blue.default}
+        fill={system.color.static.blue.default}
+        background={system.color.static.blue.default}
+        fillHover={system.color.static.amber.default}
+        accentHover={system.color.static.blue.default}
+        backgroundHover={system.color.static.amber.default}
       />
       <br />
       <SystemIcon icon={activityStreamIcon} size={48} />
       <SystemIconCircle icon={activityStreamIcon} />
       <SystemIconCircle icon={activityStreamIcon} shouldMirror={true} />
       <SystemIconCircle icon={activityStreamIcon} size={120} shouldMirror={true} />
-      <SystemIconCircle icon={activityStreamIcon} background={base.blueberry400} />
       <SystemIconCircle
         icon={activityStreamIcon}
-        background={base.blueberry400}
+        background={system.color.bg.default}
+        color={system.color.fg.inverse}
+      />
+      <SystemIconCircle
+        icon={activityStreamIcon}
+        background={system.color.bg.primary.default}
+        color={system.color.fg.inverse}
         shouldMirror={true}
+        cs={{[systemIconCircleStencil.vars.color]: cssVar(system.color.fg.inverse)}}
       />
     </div>
   ),
@@ -117,15 +137,56 @@ export const GraphicStory = {
   component: Graphic,
   render: () => (
     <div className="story">
-      <Graphic src={graphicExample} />
+      <h3>Default</h3>
+      <p>Using a local SVG</p>
+      <Graphic src={graphicExample} alt="A flag icon" />
       <br />
-      <Graphic src={graphicExample} width={120} />
-      <div style={{width: 100}}>
-        <Graphic src={graphicExample} grow={true} />
-      </div>
+      <h3>Parent setting width with grow set to true</h3>
       <div style={{width: 400}}>
-        <Graphic src={graphicExample} grow={true} shouldMirror={true} />
+        <Graphic src={graphicExample} grow={true} alt="A flag icon" />
       </div>
+      <h3>Passing in src type</h3>
+      <div style={{width: 400}}>
+        <Graphic src={graphicExampleWithURL} alt="A desktop image" />
+      </div>
+      <h3>Passing in a url</h3>
+      <div style={{width: 400}}>
+        <Graphic
+          src={{
+            url: 'https://raw.githubusercontent.com/gist/alanbsmith/244155135cbd05cdeac288f0236445e1/raw/59dc5fa911d64ecce8fc776c8c62481824c35bcb/magnifying-glass-canvas.svg',
+          }}
+          alt="A magnifying glass"
+        />
+      </div>
+      <h3>Setting Height via stencil</h3>
+      <div>
+        <Graphic
+          cs={customStyles}
+          src={{
+            url: 'https://raw.githubusercontent.com/gist/alanbsmith/244155135cbd05cdeac288f0236445e1/raw/59dc5fa911d64ecce8fc776c8c62481824c35bcb/magnifying-glass-canvas.svg',
+          }}
+          alt="A magnifying glass"
+        />
+      </div>
+      <h3>Custom Width</h3>
+      <p>Using a url SVG</p>
+      <Graphic
+        width={100}
+        alt="A magnifying glass"
+        src={{
+          url: 'https://raw.githubusercontent.com/gist/alanbsmith/244155135cbd05cdeac288f0236445e1/raw/59dc5fa911d64ecce8fc776c8c62481824c35bcb/magnifying-glass-canvas.svg',
+        }}
+        srcset="https://raw.githubusercontent.com/gist/alanbsmith/244155135cbd05cdeac288f0236445e1/raw/59dc5fa911d64ecce8fc776c8c62481824c35bcb/magnifying-glass-canvas.svg, 2x"
+      />
+      <h3>Using srcset</h3>
+      <Graphic
+        alt="A magnifying glass"
+        width={400}
+        src={{
+          url: 'https://picsum.photos/400',
+        }}
+        srcset="https://picsum.photos/400 400w, https://picsum.photos/800 800w, https://picsum.photos/1200 1200w"
+      />
     </div>
   ),
 };

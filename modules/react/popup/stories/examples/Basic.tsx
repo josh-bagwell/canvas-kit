@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {DeleteButton} from '@workday/canvas-kit-react/button';
 import {
   Popup,
@@ -35,7 +33,7 @@ export const Basic = () => {
               Are you sure you'd like to delete the item titled 'My Item'?
             </Box>
           </Popup.Body>
-          <Flex gap="s" padding="xxs" marginTop="xxs">
+          <Flex gap="s" padding="xxs">
             <Popup.CloseButton as={DeleteButton} onClick={handleDelete}>
               Delete
             </Popup.CloseButton>

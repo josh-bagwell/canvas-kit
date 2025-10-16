@@ -10,7 +10,11 @@ import {
 } from '@workday/canvas-kit-react/common';
 import {borderRadius, colors, inputColors, space} from '@workday/canvas-kit-react/tokens';
 import {LabelText} from '@workday/canvas-kit-react/text';
+import {px2rem} from '@workday/canvas-kit-styling';
 
+/**
+ * @deprecated ⚠️ `RadioProps` in Main has been deprecated and will be removed in a future major version. Please use [`Radio` in Preview](https://workday.github.io/canvas-kit/?path=/docs/preview-inputs-radio--docs) instead.
+ */
 export interface RadioProps extends Themeable {
   /**
    * If true, set the Radio button to the checked state.
@@ -152,7 +156,8 @@ const RadioInput = styled('input')<RadioProps & StyledType>(
       '& ~ div:first-of-type': {
         borderWidth: '2px',
         borderColor: variant === 'inverse' ? colors.blackPepper400 : themeFocusOutline,
-        boxShadow: 'none',
+        outline: `${px2rem(2)} solid transparent`,
+        outlineOffset: variant === 'inverse' ? '0' : '2px',
         ...focusRing({
           width: variant === 'inverse' ? 2 : 0,
           separation: 0,
@@ -267,6 +272,9 @@ const RadioCheck = styled('div')<Pick<RadioProps, 'checked' | 'variant'>>(
   })
 );
 
+/**
+ * @deprecated ⚠️ `Radio` in Main has been deprecated and will be removed in a future major version. Please use [`Radio` in Preview](https://workday.github.io/canvas-kit/?path=/docs/preview-inputs-radio--docs) instead.
+ */
 export const Radio = createComponent('input')({
   displayName: 'Radio',
   Component: (

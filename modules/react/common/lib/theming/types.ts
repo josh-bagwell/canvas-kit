@@ -6,6 +6,7 @@ import {CanvasBreakpoints, BreakpointFnParam} from './breakpoints';
 
 export type CanvasThemePalette = {
   lightest: string;
+  lighter: string;
   light: string;
   main: string;
   dark: string;
@@ -15,6 +16,9 @@ export type CanvasThemePalette = {
 
 type CanvasThemeCommonPalette = {
   focusOutline: string;
+  alertInner: string;
+  alertOuter: string;
+  errorInner: string;
 };
 
 /**
@@ -240,6 +244,7 @@ export interface CanvasTheme {
 
 /**
  * Indicates a component is themeable with a CanvasTheme
+ * @deprecated `Themeable` is deprecated. If you want to theme your application, please use `<CanvasProvider theme={{canvas: {palette: {primary: {main: 'orange'}}}}} />` at the root of your application or use our CSS tokens to change individual component styles as seen in our [Button docs](https://workday.github.io/canvas-kit/?path=/docs/components-buttons--docs#custom-styles).
  */
 export interface Themeable {
   theme?: EmotionCanvasTheme;

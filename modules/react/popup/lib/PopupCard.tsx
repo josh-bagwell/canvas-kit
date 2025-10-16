@@ -61,7 +61,7 @@ function getMaxHeight(margin?: string | number) {
       marginOffset = `${margin * 2}px`;
     }
   }
-  return `calc(100vh - ${marginOffset})`;
+  return `calc(100dvh - ${marginOffset})`;
 }
 
 export const popupCardStencil = createStencil({
@@ -72,10 +72,9 @@ export const popupCardStencil = createStencil({
   },
   base: ({maxHeight, transformOriginHorizontal, transformOriginVertical}) => ({
     ...system.type.subtext.large,
-    display: 'flex',
     position: 'relative',
     maxWidth: `calc(100vw - ${system.space.x8})`,
-    flexDirection: 'column',
+    gap: system.space.x2,
     boxShadow: system.depth[5],
     minHeight: system.space.zero,
     padding: system.space.x6,
@@ -108,6 +107,7 @@ export const PopupCard = createSubcomponent('div')({
 
   return (
     <Card
+      as={Element}
       ref={ref}
       {...mergeStyles(elemProps, [
         popupCardStencil({

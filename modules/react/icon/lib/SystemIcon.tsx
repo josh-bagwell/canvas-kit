@@ -1,10 +1,9 @@
-import * as React from 'react';
 import {iconColors} from '@workday/canvas-kit-react/tokens';
 import {CanvasSystemIcon, CanvasIconTypes} from '@workday/design-assets-types';
 import {CSSObject} from '@emotion/styled';
 import {createComponent, getColor} from '@workday/canvas-kit-react/common';
 import {cssVar, createStencil, handleCsProp, px2rem, createVars} from '@workday/canvas-kit-styling';
-import {base, system} from '@workday/canvas-tokens-web';
+import {system} from '@workday/canvas-tokens-web';
 import {Svg, SvgProps, svgStencil, transformColorNameToToken} from './Svg';
 
 /**
@@ -160,10 +159,10 @@ export const systemIconStencil = createStencil({
       height: cssVar(height, cssVar(size, system.space.x6)),
     },
     '& .wd-icon-fill': {
-      fill: cssVar(color, base.licorice200),
+      fill: cssVar(color, system.color.icon.default),
     },
     '& .wd-icon-accent, & .wd-icon-accent2': {
-      fill: cssVar(accentColor, cssVar(color, base.licorice200)),
+      fill: cssVar(accentColor, cssVar(color, system.color.fg.default)),
     },
     '& .wd-icon-background': {
       fill: cssVar(backgroundColor, 'transparent'),
@@ -172,7 +171,7 @@ export const systemIconStencil = createStencil({
     '&:where(:hover, .hover) .wd-icon-fill': {
       fill: cssVar(
         deprecatedSystemIconVars.fillHover,
-        cssVar(deprecatedSystemIconVars.colorHover, cssVar(color, base.licorice200))
+        cssVar(deprecatedSystemIconVars.colorHover, cssVar(color, system.color.fg.default))
       ),
     },
     '&:where(:hover, .hover) .wd-icon-accent, & .wd-icon-accent2': {
@@ -180,7 +179,7 @@ export const systemIconStencil = createStencil({
         deprecatedSystemIconVars.accentHover,
         cssVar(
           deprecatedSystemIconVars.colorHover,
-          cssVar(accentColor, cssVar(color, base.licorice200))
+          cssVar(accentColor, cssVar(color, system.color.fg.default))
         )
       ),
     },
@@ -190,7 +189,15 @@ export const systemIconStencil = createStencil({
         cssVar(backgroundColor, 'transparent')
       ),
     },
+    // for Windows high contrast desktop themes
+    '@media (prefers-contrast: more)': {
+      '.wd-icon-fill, .wd-icon-accent': {
+        color: 'currentColor',
+        fill: 'currentColor',
+      },
+    },
   }),
+  modifiers: {},
 });
 
 export const SystemIcon = createComponent('span')({

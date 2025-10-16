@@ -31,18 +31,18 @@ export type CanvasSpaceValues = ValueOf<CanvasSpace>;
  * Below is a table to show the equivalent values from `px` to `rem`.
  * This is based on the default browser font size which is `16px`.
  *
- * | px Value  | rem Value | space token |
- * | --------- | --------- | ----------- |
- * | 0         | 0         | zero        |
- * | 4px       | 0.25rem   | xxxs        |
- * | 8px       | 0.5rem    | xxs         |
- * | 12px      | 0.75rem   | xs          |
- * | 16px      | 1rem      | s           |
- * | 24px      | 1.5rem    | m           |
- * | 32px      | 2rem      | l           |
- * | 40px      | 2.5rem    | xl          |
- * | 64px      | 4rem      | xxl         |
- * | 80px      | 5rem      | xxxl        |
+ * | px Value  | rem Value | space token | new token |
+ * | --------- | --------- | ----------- | --------- |
+ * | 0         | 0         | zero        | `system.space.zero` |
+ * | 4px       | 0.25rem   | xxxs        | `system.space.x1` |
+ * | 8px       | 0.5rem    | xxs         | `system.space.x2` |
+ * | 12px      | 0.75rem   | xs          | `system.space.x3` |
+ * | 16px      | 1rem      | s           | `system.space.x4` |
+ * | 24px      | 1.5rem    | m           | `system.space.x6` |
+ * | 32px      | 2rem      | l           | `system.space.x8` |
+ * | 40px      | 2.5rem    | xl          | `system.space.x10` |
+ * | 64px      | 4rem      | xxl         | `system.space.x16` |
+ * | 80px      | 5rem      | xxxl        | `system.space.x20` |
  *
  * */
 export const space: CanvasSpace = {
@@ -75,7 +75,7 @@ export const space: CanvasSpace = {
  * }
  * ```
  *
- * @deprecated ⚠️ `spaceNumbers` has been deprecated in a future major version. Please use our `rem` based [`space`](https://workday.github.io/canvas-kit/?path=/docs/tokens--space) tokens. In the case where you need to calculate a value, use [CSS calc()](https://developer.mozilla.org/en-US/docs/Web/CSS/calc).
+ * @deprecated ⚠️ `spaceNumbers` has been deprecated in a future major version. Please use our css var based [`space`](https://workday.github.io/canvas-tokens/?path=/docs/docs-system-tokens-space--docs) tokens. In the case where you need to calculate a value, use [calc() function](https://workday.github.io/canvas-kit/?path=/docs/styling-utilities--docs#calc-functions).
  */
 export type CanvasSpaceNumbers = {
   zero: 0;
@@ -91,7 +91,7 @@ export type CanvasSpaceNumbers = {
 };
 
 /** The numeric rem values for CanvasSpaceNumbers (numbers)
- * @deprecated ⚠️ `CanvasSpaceNumberValues` has been deprecated in a future major version. Please use our `rem` based [`space`](https://workday.github.io/canvas-kit/?path=/docs/tokens--space) tokens. In the case where you need to calculate a value, use [CSS calc()](https://developer.mozilla.org/en-US/docs/Web/CSS/calc).
+ * @deprecated ⚠️ `CanvasSpaceNumberValues` has been deprecated in a future major version. Please use our css var based [`space`](https://workday.github.io/canvas-tokens/?path=/docs/docs-system-tokens-space--docs) tokens. In the case where you need to calculate a value, use [calc() function](https://workday.github.io/canvas-kit/?path=/docs/styling-utilities--docs#calc-functions).
  */
 export type CanvasSpaceNumberValues = ValueOf<CanvasSpaceNumbers>;
 
@@ -112,7 +112,7 @@ export type CanvasSpaceNumberValues = ValueOf<CanvasSpaceNumbers>;
  * }
  * ```
  *
- * @deprecated ⚠️ `spaceNumbers` has been deprecated in a future major version. Please use our `rem` based [`space`](https://workday.github.io/canvas-kit/?path=/docs/tokens--space) tokens. In the case where you need to calculate a value, use [CSS calc()](https://developer.mozilla.org/en-US/docs/Web/CSS/calc).
+ * @deprecated ⚠️ `spaceNumbers` has been deprecated in a future major version. Please use our css var based [`space`](https://workday.github.io/canvas-tokens/?path=/docs/docs-system-tokens-space--docs) tokens. In the case where you need to calculate a value, use [calc() function](https://workday.github.io/canvas-kit/?path=/docs/styling-utilities--docs#calc-functions).
  */
 export const spaceNumbers: CanvasSpaceNumbers = {
   zero: 0,

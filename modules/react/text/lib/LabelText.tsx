@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {createComponent} from '@workday/canvas-kit-react/common';
 import {system} from '@workday/canvas-tokens-web';
 import {createStencil} from '@workday/canvas-kit-styling';
@@ -74,7 +73,7 @@ const labelTextStencil = createStencil({
  * );
  * ```
  *
- * @deprecated ⚠️ `LabelText` has been deprecated and will be removed in a future major version. Please use [FormField.Label](https://workday.github.io/canvas-kit/?path=/docs/preview-inputs-form-field--basic) from Preview instead.
+ * @deprecated ⚠️ `LabelText` has been deprecated and will be removed in a future major version. Please use [FormField.Label](https://workday.github.io/canvas-kit/?path=/docs/components-inputs-form-field--docs) from Main instead.
  */
 export const LabelText = createComponent('label')({
   displayName: 'Label',

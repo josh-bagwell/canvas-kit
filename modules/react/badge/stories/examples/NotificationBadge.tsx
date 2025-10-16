@@ -4,7 +4,7 @@ import {SecondaryButton, TertiaryButton} from '@workday/canvas-kit-react/button'
 import {AriaLiveRegion, useUniqueId} from '@workday/canvas-kit-react/common';
 import {createStyles, cssVar} from '@workday/canvas-kit-styling';
 import {notificationsIcon} from '@workday/canvas-system-icons-web';
-import {base, system} from '@workday/canvas-tokens-web';
+import {system} from '@workday/canvas-tokens-web';
 import {Tooltip} from '@workday/canvas-kit-react/tooltip';
 import {Flex} from '@workday/canvas-kit-react/layout';
 
@@ -44,7 +44,7 @@ const countBadgeStyles = createStyles({
 // NVDA + FF: Consistently describes count value only "{X}"
 // macOS v14.6.1
 // VoiceOver + Chrome / Safari: Consistently describes "New notifications {X}"
-export function NotificationBadge() {
+export const NotificationBadge = () => {
   const [count, setCount] = React.useState(4);
   const badgeID = useUniqueId();
 
@@ -74,4 +74,4 @@ export function NotificationBadge() {
       </Flex>
     </Flex>
   );
-}
+};

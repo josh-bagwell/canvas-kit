@@ -1,7 +1,14 @@
-import * as React from 'react';
 import {system} from '@workday/canvas-tokens-web';
 import {createComponent} from '@workday/canvas-kit-react/common';
-import {handleCsProp, keyframes, CSProps, createStencil, calc} from '@workday/canvas-kit-styling';
+import {
+  handleCsProp,
+  keyframes,
+  CSProps,
+  createStencil,
+  calc,
+  px2rem,
+  cssVar,
+} from '@workday/canvas-kit-styling';
 
 /**
  * Keyframe for the dots loading animation.
@@ -12,6 +19,15 @@ const keyframesLoading = keyframes({
   },
   '40%': {
     transform: 'scale(1)',
+  },
+  '0%, 79%, 100%': {
+    opacity: 0.6,
+  },
+  '27%': {
+    opacity: 1,
+  },
+  '53%': {
+    opacity: 0.8,
   },
 });
 
@@ -26,22 +42,27 @@ export interface LoadingDotsProps extends CSProps {
    * @default `40ms`
    */
   animationDurationMs?: string;
+  variant?: 'inverse';
 }
 
 export const loadingDotsStencil = createStencil({
   vars: {
     animationDurationMs: '40ms',
-    loadingDotColor: system.color.bg.alt.strong,
+    loadingDotColor: system.color.bg.muted.strong,
   },
-  base: ({loadingDotColor, animationDurationMs}) => ({
+  parts: {
+    loadingAnimationDot: 'loading-animation-dot',
+  },
+  base: ({loadingDotColor, animationDurationMs, loadingAnimationDotPart}) => ({
     display: 'inline-flex',
     gap: system.space.x2,
-    '& [data-part="loading-animation-dot"]': {
+    [loadingAnimationDotPart]: {
       backgroundColor: loadingDotColor,
       width: system.space.x4,
       height: system.space.x4,
       fontSize: system.space.zero,
       borderRadius: system.shape.round,
+      outline: `${px2rem(2)} solid transparent`,
       transform: 'scale(0)',
       display: 'inline-block',
       animationName: keyframesLoading,
@@ -60,6 +81,15 @@ export const loadingDotsStencil = createStencil({
       },
     },
   }),
+  modifiers: {
+    variant: {
+      inverse: ({loadingDotColor, loadingAnimationDotPart}) => ({
+        [loadingAnimationDotPart]: {
+          backgroundColor: cssVar(system.color.bg.default, loadingDotColor),
+        },
+      }),
+    },
+  },
 });
 
 /**
@@ -68,14 +98,17 @@ export const loadingDotsStencil = createStencil({
 export const LoadingDots = createComponent('div')({
   displayName: 'LoadingDots',
   Component: (
-    {loadingDotColor, animationDurationMs, ...elemProps}: LoadingDotsProps,
+    {loadingDotColor, animationDurationMs, variant, ...elemProps}: LoadingDotsProps,
     ref,
     Element
   ) => {
     return (
       <Element
         ref={ref}
-        {...handleCsProp(elemProps, loadingDotsStencil({loadingDotColor, animationDurationMs}))}
+        {...handleCsProp(
+          elemProps,
+          loadingDotsStencil({loadingDotColor, animationDurationMs, variant})
+        )}
       >
         <div data-part="loading-animation-dot" />
         <div data-part="loading-animation-dot" />

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {createComponent, ErrorType, focusRing, useUniqueId} from '@workday/canvas-kit-react/common';
-import {createStencil, px2rem} from '@workday/canvas-kit-styling';
+import {calc, createStencil, px2rem} from '@workday/canvas-kit-styling';
 import {brand, system} from '@workday/canvas-tokens-web';
 import {mergeStyles} from '../../layout';
 
@@ -93,16 +93,16 @@ const switchInputStencil = createStencil({
         '& ~ div:first-of-type': {
           boxShadow: `
               0 0 0 ${px2rem(2)} ${system.color.border.inverse},
-              0 0 0 ${system.space.x1} ${brand.error.base},
+              0 0 0 ${system.space.x1} ${brand.common.errorInner},
               0 0 0 ${px2rem(5)} transparent`,
         },
       },
-      alert: {
+      caution: {
         '& ~ div:first-of-type': {
           boxShadow: `
           0 0 0 ${px2rem(2)} ${system.color.border.inverse},
-          0 0 0 ${system.space.x1} ${brand.alert.base},
-          0 0 0 ${px2rem(5)} ${brand.alert.darkest}`,
+          0 0 0 ${system.space.x1} ${brand.common.alertInner},
+          0 0 0 ${px2rem(5)} ${brand.common.alertOuter}`,
         },
       },
     },
@@ -158,6 +158,9 @@ const switchCircleStencil = createStencil({
     checked: {
       true: {
         transform: `translateX(${system.space.x4})`,
+        ':dir(rtl)': {
+          transform: `translateX(${calc.negate(system.space.x4)})`,
+        },
       },
     },
   },

@@ -3,7 +3,7 @@ import React from 'react';
 /* eslint-disable @emotion/no-vanilla */
 import {expectTypeOf} from 'expect-type';
 import {Properties} from 'csstype';
-import {SerializedStyles} from '@emotion/serialize';
+import {SerializedStyles, ComponentSelector} from '@emotion/serialize';
 import {css} from '@emotion/css';
 import {jsx, CacheProvider} from '@emotion/react';
 import styled from '@emotion/styled';
@@ -37,7 +37,7 @@ describe('cs', () => {
     it('should accept an object of CSS Properties', () => {
       type Input = Exclude<
         Parameters<typeof createStyles>[0],
-        string | number | boolean | SerializedStyles | undefined
+        string | number | boolean | SerializedStyles | undefined | null | ComponentSelector
       >;
       type PositionProperty = Input['position'];
       const temp: PositionProperty = 'absolute';
@@ -45,7 +45,7 @@ describe('cs', () => {
         position: 'absolute',
       });
       expectTypeOf<PositionProperty>().toMatchTypeOf<
-        Properties['position'] | Properties['position'][] | (string & {})
+        (Properties['position'] | (string & {})) | (Properties['position'] | (string & {}))[]
       >();
     });
 
@@ -118,6 +118,7 @@ describe('cs', () => {
       const expected = cssVar(input);
 
       expect(expected).toEqual('var(--my-var)');
+      expectTypeOf(expected).toEqualTypeOf<`var(--my-var)`>();
     });
 
     it('should return a css var wrapper that includes a fallback', () => {
@@ -125,12 +126,14 @@ describe('cs', () => {
       const expected = cssVar(input, 'red');
 
       expect(expected).toEqual('var(--my-var, red)');
+      expectTypeOf(expected).toEqualTypeOf<`var(--my-var, red)`>();
     });
 
     it('should return a css var wrapper that includes a fallback without cssVar wrapping', () => {
       const expected = cssVar('--my-var', '--my-fallback-var');
 
       expect(expected).toEqual('var(--my-var, var(--my-fallback-var))');
+      expectTypeOf(expected).toEqualTypeOf<`var(--my-var, var(--my-fallback-var))`>();
     });
   });
 
@@ -178,7 +181,7 @@ describe('cs', () => {
       expect(myVars).toHaveProperty('color');
       expect(myVars).toHaveProperty('$$defaults');
 
-      expectTypeOf(myVars.color).toEqualTypeOf<string>();
+      expectTypeOf(myVars.color).toEqualTypeOf<`--${string}`>();
       expectTypeOf(myVars.$$defaults).toEqualTypeOf<Record<string, string>>();
     });
 
@@ -240,9 +243,9 @@ describe('cs', () => {
       );
 
       expectTypeOf(myVars).toHaveProperty('default');
-      expectTypeOf(myVars.default).toEqualTypeOf<Record<'color', string>>();
+      expectTypeOf(myVars.default).toEqualTypeOf<Record<'color', `--${string}`>>();
       expectTypeOf(myVars).toHaveProperty('hover');
-      expectTypeOf(myVars.hover).toEqualTypeOf<Record<'color', string>>();
+      expectTypeOf(myVars.hover).toEqualTypeOf<Record<'color', `--${string}`>>();
     });
 
     it('should handle nested variables $$defaults', () => {
@@ -716,9 +719,31 @@ describe('cs', () => {
 
       expectTypeOf(myStencil).toHaveProperty('vars');
       expectTypeOf(myStencil.vars).toHaveProperty('color');
-      expectTypeOf(myStencil.vars.color).toEqualTypeOf<string>();
+      expectTypeOf(myStencil.vars.color).toEqualTypeOf<`--${string}`>();
 
       expect(myStencil).toHaveProperty('vars.color', expect.stringMatching(/--color-[a-z0-9]+/));
+    });
+
+    it('should return access to parts for data-part attributes', () => {
+      const myStencil = createStencil({
+        parts: {
+          separator: 'my-separator',
+        },
+        base: ({separatorPart}) => {
+          expectTypeOf(separatorPart).toEqualTypeOf<'[data-part="my-separator"]'>();
+
+          return {};
+        },
+      });
+
+      expectTypeOf(myStencil).toHaveProperty('parts');
+      expectTypeOf(myStencil.parts).toHaveProperty('separator');
+      expectTypeOf(myStencil.parts.separator).toEqualTypeOf<{'data-part': 'my-separator'}>();
+
+      expect(myStencil).toHaveProperty(
+        'parts.separator[data-part]',
+        expect.stringMatching('my-separator')
+      );
     });
 
     it('should coerce a variable input to a type of string', () => {
@@ -797,6 +822,7 @@ describe('cs', () => {
         }
       }
       expect(found).toEqual(true);
+      expectTypeOf(myStencil.vars.default.color).toEqualTypeOf<`--${string}`>();
     });
 
     it('should handle variables and pass them to the modifier function', () => {
@@ -809,9 +835,15 @@ describe('cs', () => {
         base: {},
         modifiers: {
           variant: {
-            regular: vars => ({
-              color: vars.default.color,
-            }),
+            regular: vars => {
+              expectTypeOf(vars).toHaveProperty('default');
+              expectTypeOf(vars.default).toHaveProperty('color');
+              expectTypeOf(vars.default.color).toEqualTypeOf<`--${string}`>();
+
+              return {
+                color: vars.default.color,
+              };
+            },
           },
         },
       });
@@ -824,6 +856,77 @@ describe('cs', () => {
         for (const rule of sheet.cssRules as any as Iterable<CSSRule>) {
           if (rule.cssText.includes(myStencil.modifiers.variant.regular)) {
             expect(rule.cssText).toContain(`color: var(${myStencil.vars.default.color})`);
+            found = true;
+          }
+        }
+      }
+      expect(found).toEqual(true);
+    });
+
+    it('should handle variables and pass them to the compound modifier function', () => {
+      const myStencil = createStencil({
+        vars: {
+          color: 'red',
+        },
+        parts: {
+          separator: 'my-separator',
+        },
+        base: {},
+        modifiers: {
+          variant: {
+            regular: {
+              '--variant': 'regular',
+            },
+          },
+          size: {
+            large: {
+              '--size': 'large',
+            },
+            small: {
+              '--size': 'small',
+            },
+          },
+        },
+        compound: [
+          {
+            modifiers: {
+              variant: 'regular',
+              size: 'large',
+            },
+            styles: varsAndParts => {
+              expectTypeOf(varsAndParts).toHaveProperty('color');
+              expectTypeOf(varsAndParts.color).toEqualTypeOf<`--${string}`>();
+              expectTypeOf(varsAndParts).toHaveProperty('separatorPart');
+              expectTypeOf(
+                varsAndParts.separatorPart
+              ).toEqualTypeOf<'[data-part="my-separator"]'>();
+
+              return {
+                '--modifiers': 'var(--regular-large)',
+                color: varsAndParts.color,
+              };
+            },
+          },
+          {
+            modifiers: {
+              variant: 'regular',
+              size: 'small',
+            },
+            styles: {
+              color: 'blue',
+            },
+          },
+        ],
+      });
+
+      // `.toHaveStyle` doesn't work with variables and worse, it ALWAYS passes when passed anything
+      // other than a parsable color string. https://github.com/testing-library/jest-dom/issues/322
+      // We'll resort to iterating over injected styles instead.
+      let found = false;
+      for (const sheet of document.styleSheets as any as Iterable<CSSStyleSheet>) {
+        for (const rule of sheet.cssRules as any as Iterable<CSSRule>) {
+          if (rule.cssText.includes('var(--regular-large)')) {
+            expect(rule.cssText).toContain(`color: var(${myStencil.vars.color})`);
             found = true;
           }
         }
@@ -862,7 +965,7 @@ describe('cs', () => {
 
       const result2 = myStencil({width: 'zero', height: '10px'});
       expect(result2).toHaveProperty('style');
-      expect(result2.style).toHaveProperty(myStencil.vars.width, 'zero');
+      expect(result2.style).not.toHaveProperty(myStencil.vars.width, 'zero');
 
       // match base and width modifier
       expect(result2.className).toContain(`${myStencil.base} ${myStencil.modifiers.width.zero}`);
@@ -878,7 +981,7 @@ describe('cs', () => {
         modifiers: {
           width: {
             zero: ({width}) => {
-              expectTypeOf(width).toEqualTypeOf<string>();
+              expectTypeOf(width).toEqualTypeOf<`--${string}`>();
 
               return {
                 width: width,
@@ -1182,16 +1285,64 @@ describe('cs', () => {
           base: {},
         });
 
-        expectTypeOf(extendedStencil.vars.color).toEqualTypeOf<string>();
+        expectTypeOf(extendedStencil.vars.color).toEqualTypeOf<`--${string}`>();
         expect(extendedStencil).toHaveProperty(
           'vars.color',
           expect.stringMatching(/--color-[0-9a-z]+/i)
         );
 
-        expectTypeOf(extendedStencil.vars.background).toEqualTypeOf<string>();
+        expectTypeOf(extendedStencil.vars.background).toEqualTypeOf<`--${string}`>();
         expect(extendedStencil).toHaveProperty(
           'vars.background',
           expect.stringMatching(/--background-[0-9a-z]+/i)
+        );
+      });
+
+      it('should return access to extended parts for data-part attributes', () => {
+        const baseStencil = createStencil({
+          parts: {
+            separator: 'base-separator',
+          },
+          base: ({separatorPart}) => {
+            expectTypeOf(separatorPart).toEqualTypeOf<'[data-part="base-separator"]'>();
+
+            return {};
+          },
+        });
+
+        const extendedStencil = createStencil({
+          parts: {
+            border: 'extended-border',
+          },
+          extends: baseStencil,
+          base: ({separatorPart, borderPart}) => {
+            expectTypeOf(separatorPart).toEqualTypeOf<'[data-part="base-separator"]'>();
+            expectTypeOf(borderPart).toEqualTypeOf<'[data-part="extended-border"]'>();
+
+            return {};
+          },
+        });
+
+        // base
+        expectTypeOf(extendedStencil).toHaveProperty('parts');
+        expectTypeOf(extendedStencil.parts).toHaveProperty('separator');
+        expectTypeOf(extendedStencil.parts.separator).toEqualTypeOf<{
+          'data-part': 'base-separator';
+        }>();
+        expect(extendedStencil).toHaveProperty(
+          'parts.separator[data-part]',
+          expect.stringMatching('base-separator')
+        );
+
+        // extended
+        expectTypeOf(extendedStencil).toHaveProperty('parts');
+        expectTypeOf(extendedStencil.parts).toHaveProperty('border');
+        expectTypeOf(extendedStencil.parts.border).toEqualTypeOf<{
+          'data-part': 'extended-border';
+        }>();
+        expect(extendedStencil).toHaveProperty(
+          'parts.border[data-part]',
+          expect.stringMatching('extended-border')
         );
       });
 
@@ -1308,6 +1459,107 @@ describe('cs', () => {
         // baseStencil.base, baseStencil large, baseStencil only position, baseStencil compound, extendedStencil.base, extendedStencil large, extendedStencil compound
         expect(className.split(' ')).toHaveLength(10); // 7 + 3 modifier hashes
       });
+
+      describe('when vars and modifiers share the same key', () => {
+        function setup() {
+          const baseStencil = createStencil({
+            vars: {
+              width: '10px',
+            },
+            base: ({width}) => ({
+              width: width,
+            }),
+            modifiers: {
+              width: {
+                zero: {
+                  width: '0',
+                },
+              },
+            },
+          });
+
+          const extendedStencil = createStencil({
+            extends: baseStencil,
+            vars: {
+              height: '',
+            },
+            base: ({height}) => ({
+              height: height,
+            }),
+            modifiers: {
+              height: {
+                zero: {},
+              },
+            },
+          });
+
+          return {baseStencil, extendedStencil};
+        }
+
+        it('should set up the correct types', () => {
+          const {extendedStencil} = setup();
+
+          type Arg = Exclude<Parameters<typeof extendedStencil>[0], undefined>;
+          expectTypeOf<Arg>().toHaveProperty('width');
+          expectTypeOf<Arg['width']>().toMatchTypeOf<(string & {}) | 'zero' | undefined>();
+          expectTypeOf<Arg>().toHaveProperty('height');
+          expectTypeOf<Arg['height']>().toMatchTypeOf<(string & {}) | 'zero' | undefined>();
+        });
+
+        it('should apply modifiers when a modifier is matched', () => {
+          const {extendedStencil} = setup();
+
+          const result = extendedStencil({width: 'zero', height: 'zero'});
+          expect(result.className).toContain(extendedStencil.modifiers.width.zero);
+          expect(result.className).toContain(extendedStencil.modifiers.height.zero);
+
+          expect(result).toHaveProperty('style');
+          expect(result.style).not.toHaveProperty(extendedStencil.vars.width);
+          expect(result.style).not.toHaveProperty(extendedStencil.vars.height);
+        });
+
+        it('should apply vars when a var is matched', () => {
+          const {extendedStencil} = setup();
+
+          const result = extendedStencil({width: '10px', height: '20px'});
+          expect(result.className).not.toContain(extendedStencil.modifiers.width.zero);
+          expect(result.className).not.toContain(extendedStencil.modifiers.height.zero);
+
+          expect(result).toHaveProperty('style');
+          expect(result.style).toHaveProperty(extendedStencil.vars.width, '10px');
+          expect(result.style).toHaveProperty(extendedStencil.vars.height, '20px');
+        });
+      });
+    });
+
+    it('should handle parts and pass them to the base function as [data-part=${part-value}]', () => {
+      const myStencil = createStencil({
+        parts: {
+          separator: 'my-separator',
+        },
+        base: ({separatorPart}) => ({
+          [`${separatorPart}`]: {},
+        }),
+      });
+
+      // `.toHaveStyle` doesn't work with variables and worse, it ALWAYS passes when passed anything
+      // other than a parsable color string. https://github.com/testing-library/jest-dom/issues/322
+      // We'll resort to iterating over injected styles instead.
+      let found = false;
+      for (const sheet of document.styleSheets as any as Iterable<CSSStyleSheet>) {
+        for (const rule of sheet.cssRules as any as Iterable<CSSRule>) {
+          if (rule.cssText.includes(myStencil.base)) {
+            if (rule.cssText.includes(myStencil.parts.separator['data-part'])) {
+              expect(rule.cssText).toContain(
+                `${myStencil.base} [data-part="${myStencil.parts.separator['data-part']}"]`
+              );
+            }
+
+            found = true;
+          }
+        }
+      }
+      expect(found).toEqual(true);
     });
   });
 });

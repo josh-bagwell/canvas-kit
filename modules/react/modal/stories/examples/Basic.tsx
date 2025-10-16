@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Modal} from '@workday/canvas-kit-react/modal';
 import {PrimaryButton} from '@workday/canvas-kit-react/button';
 import {Flex, Box} from '@workday/canvas-kit-react/layout';
@@ -26,7 +24,7 @@ export const Basic = () => {
               software and associated documentation files (the "Software").
             </Box>
           </Modal.Body>
-          <Flex gap="s" padding="xxs" marginTop="xxs">
+          <Flex gap="s" padding="xxs">
             <Modal.CloseButton as={PrimaryButton} onClick={handleAcknowledge}>
               Acknowledge
             </Modal.CloseButton>

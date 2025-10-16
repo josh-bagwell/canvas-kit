@@ -6,8 +6,11 @@ import {
 } from '@workday/canvas-kit-docs';
 
 import {Basic} from './examples/Basic';
+import {Disabled} from './examples/Disabled';
+import {Error} from './examples/Error';
 import {Complex} from './examples/Complex';
 import {Icons} from './examples/Icons';
+import {InitialSelectedItems} from './examples/InitialSelectedItems';
 import {Controlled} from './examples/Controlled';
 import {Searching} from './examples/Searching';
 
@@ -56,7 +59,19 @@ attached to the `MultiSelect.Input` and read out as a group for voiceover.
 </MultiSelect>
 ```
 
-<ExampleCodeBlock code={Basic} />
+### Disabled Example
+
+Disabling `MultiSelect` involves passing the `disabled` prop to the `MultiSelect.Input` component.
+
+<ExampleCodeBlock code={Disabled} />
+
+### Error States
+
+The `MultiSelect.Input` and `MultiSelect.SearchInput` support the `ErrorType` from the Common
+package. The error styling is identical to the `TextInput` error styling. The `error` prop is
+typically passed from the `FormField` component.
+
+<ExampleCodeBlock code={Error} />
 
 ### Complex
 
@@ -99,3 +114,9 @@ dynamically load items as the user navigates the available options.
 > be cleared when the user blurs the field.
 
 <ExampleCodeBlock code={Searching} />
+
+### Initial Selected Items
+
+You can set `initialSelectedIds` to the value that you want initially selected.
+
+<ExampleCodeBlock code={InitialSelectedItems} />
