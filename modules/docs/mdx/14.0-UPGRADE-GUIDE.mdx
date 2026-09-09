@@ -1,5 +1,6 @@
-import {Meta} from '@storybook/addon-docs';
-import {StorybookStatusIndicator, DownloadLLMFile} from '@workday/canvas-kit-docs';
+import {Meta} from '@storybook/blocks';
+
+import {DownloadLLMFile, StorybookStatusIndicator} from '@workday/canvas-kit-docs';
 
 <Meta title="Guides/Upgrade Guides/v14.0/Overview" />
 
@@ -40,6 +41,7 @@ visual reference of what's changed.**
   - [Expandable](#expandable)
   - [Hyperlink and External Hyperlink](#hyperlink-and-external-hyperlink)
   - [Loading Dots](#loading-dots)
+  - [Modals and Dialogs](#modals-and-dialogs)
   - [Pill (Preview)](#pill-preview)
   - [Search Form (Labs)](#search-form-labs-)
   - [Status Indicator (Preview)](#status-indicator-preview-)
@@ -57,7 +59,7 @@ visual reference of what's changed.**
   - [Deprecated Buttons](#deprecated-buttons)
   - [Input Provider](#input-provider)
   - [Menu (Preview)](#menu-preview)
-  - [readyOnlyPillStencil and removeablePillStencil](#readonlypillstencil-and-removeablepillstencil)
+  - [readOnlyPillStencil and removeablePillStencil](#readonlypillstencil-and-removeablepillstencil)
   - [Text Area (Labs)](#text-area)
   - [Text Input (Labs)](#text-input)
 - [Troubleshooting](#troubleshooting)
@@ -84,7 +86,7 @@ input for LLMs to automate and assist with your migration process.
   migration
 
 <DownloadLLMFile
-  rawFileLink="https://raw.githubusercontent.com/Workday/canvas-kit/master/modules/docs/llm-txt/llm-canvas-kit-upgrade-guide-v14.txt"
+  rawFileLink="https://raw.githubusercontent.com/Workday/canvas-kit/master/modules/docs/llm/llm-canvas-kit-upgrade-guide-v14.txt"
   filename="llm-canvas-kit-upgrade-guide-v14.txt"
 />
 
@@ -172,7 +174,7 @@ Follow these guides to migrate:
 
 > 🤖 The `v14-tokens` codemod will automatically migrate your tokens, whether you're upgrading from
 > old tokens or from v2 to v3. Read
-> [the codemod instructions](https://workday.github.io/canvas-kit/?path=/docs/guides-tokens-migration-codemod--docs)
+> [the codemod instructions](https://workday.github.io/canvas-kit/?path=/docs/guides-tokens-migration-migration-codemod--docs)
 
 ## Caution Naming
 
@@ -334,7 +336,7 @@ specificity.
 
 ### useIsRTL
 
-**PR:** [#3480](https://github.com/Workday/canvas-kit/pull/3477)
+**PR:** [#3477](https://github.com/Workday/canvas-kit/pull/3477)
 
 The `useIsRTL` hook has been deprecated. Please use
 [CSS logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties)
@@ -631,7 +633,7 @@ provide a value for the `name` prop.
 The `Pill` component no longer supports `default` as a value for the `variant` prop. If the
 `variant` prop is not provided, the component will use its default styling.
 
-`readyOnlyPillStencil` and `removeablePillStencil` have been removed. Please use `pillStencil`
+`readOnlyPillStencil` and `removeablePillStencil` have been removed. Please use `pillStencil`
 instead.
 
 **Before in v13**
@@ -650,6 +652,51 @@ instead.
   <Pill.Avatar name="John Doe" />
   <Pill.Label>John Doe</Pill.Label>
 </Pill>
+```
+
+### Modals and Dialogs
+
+Previously, the `usePopupStack` hook created a CSS class name that was passed to our Popups. We
+attached those theme styles to that class name. This allowed the theme to be available in our
+Popups. But it also created a cascade barrier that blocked the global theme from being applied to
+our Popup components. Because we now use global CSS variables, we no longer need this class name to
+provide the global theme to Popups. But we have to remove this generated class name to allow the
+global theme to be applied to Popups. Instead, only the defined theme properties from the `theme` prop from the `CanvasProvider` will be applied to Popups and Modals.
+
+If you want to have scoped theming where a part of your application needs different theming, you can
+still do this via the `theme` prop.
+
+> **Note:** Only the properties of the theme object that are changed will be forward to popups and
+> modals. IE, if you change theme.palette.primary.main, only those tokens will change for popups and
+> modals.
+
+#### Scoped Theming vs Global Theming
+
+**Only** use the `theme` prop on the `CanvasProvider` if you intentionally want to theme part of
+your application that is different from global theming.
+
+**Scoped Theming**
+
+```tsx
+
+<CanvasProvider theme={{canvas: {palette: {primary: {main: 'teal'}}}}}>
+ {//part of your app to have different theme from the rest of your application}
+</CanvasProvider>
+```
+
+> **Important:** Use the `theme` prop on the `CanvasProvider` if you intentionally want to theme
+> part of your application that is different from global theming.
+
+**Global Theming**
+
+```tsx
+import '@workday/canvas-tokens-web/css/base/_variables.css';
+import '@workday/canvas-tokens-web/css/brand/_variables.css';
+import '@workday/canvas-tokens-web/css/system/_variables.css';
+
+<CanvasProvider>
+  <App />
+</CanvasProvider>;
 ```
 
 ### Search Form (Labs) 🚨
@@ -798,6 +845,7 @@ import { Avatar } from '@workday/canvas-kit-react/avatar';
 
 ```tsx
 import {Avatar} from '@workday/canvas-kit-preview-react/avatar';
+
 // name is used as a fallback if the image url is broken or still loading
 // variant defines the color of the Avatar
 <Avatar name="John Doe" size="extraExtraLarge" variant="teal" url={yourImageUrl} />;
@@ -822,7 +870,7 @@ import {BaseAvatar} from '@workday/canvas-kit-preview-react/avatar';
 ### Combobox (Labs)
 
 The Combobox component in `@workday/canvas-kit-labs-react/combobox` has been deprecated. Please
-migrate to the [Combobox](/get-started/for-developers/resources/combobox/) in
+migrate to the [Combobox](/get-started/for-developers/guides/combobox/) in
 `@workday/canvas-kit-react`.
 
 ### Radio (Main)
@@ -836,7 +884,7 @@ and API consistency.
 **PR:** [#3469](https://github.com/Workday/canvas-kit/pull/3469)
 
 The `SearchForm` in `@workday/canvas-kit-labs-react/search-form` has been deprecated. Please migrate
-to the [Combobox](/get-started/for-developers/resources/combobox/) in `@workday/canvas-kit-react`.
+to the [Combobox](/get-started/for-developers/guides/combobox/) in `@workday/canvas-kit-react`.
 
 ### Segmented Control (Main)
 
@@ -865,7 +913,7 @@ replaced the removed component or utility.
 
 ### Deprecated Buttons
 
-**PR:** [#3429](https://github.com/Workday/canvas-kit/pull/3439)
+**PR:** [#3439](https://github.com/Workday/canvas-kit/pull/3439)
 
 Long overdue, but a sign of moving forward, we've removed our `DeprecatedButton`. Our design system
 supported this for quite some time, but with the advancement in theming, our components API and our
@@ -910,9 +958,9 @@ const buttonStyles = createStyles({
 We've removed `Menu` from `@workday/canvas-kit-preview-react`. Please use
 [Menu](/components/popups/menu/) from `@workday/canvas-kit-react` instead.
 
-### readyOnlyPillStencil and removeablePillStencil
+### readOnlyPillStencil and removeablePillStencil
 
-The `readyOnlyPillStencil` and `removeablePillStencil` utilities have been removed from the Pill
+The `readOnlyPillStencil` and `removeablePillStencil` utilities have been removed from the Pill
 package. Please use `pillStencil` instead.
 
 ### Text Area (Preview)
@@ -936,8 +984,8 @@ import {TextArea} from '@workday/canvas-kit-preview-react/text-area';
 **After in v14**
 
 ```tsx
-import {TextArea} from '@workday/canvas-kit-react/text-area';
 import {FormField} from '@workday/canvas-kit-react/form-field';
+import {TextArea} from '@workday/canvas-kit-react/text-area';
 
 <FormField>
   <FormField.Label>Leave a Review</FormField.Label>
@@ -968,8 +1016,9 @@ import {TextInput} from '@workday/canvas-kit-preview-react/text-input';
 **After in v14**
 
 ```tsx
-import {TextArea} from '@workday/canvas-kit-react/text-input';
+import {TextArea} from '@workday/canvas-kit-react/text-area';
 import {FormField} from '@workday/canvas-kit-react/form-field';
+import {TextArea} from '@workday/canvas-kit-react/text-input';
 
 <FormField>
   <FormField.Label>Leave a Review</FormField.Label>
@@ -987,7 +1036,6 @@ import {FormField} from '@workday/canvas-kit-react/form-field';
 
 - **Dependency Conflicts**: When upgrading to the latest major version of Canvas Kit, all related
   Canvas Kit packages should be updated at the same time:
-
   - `"@workday/canvas-kit-react": "^13.5.6"` → `"@workday/canvas-kit-react": "^14.0.0"`
   - `"@workday/canvas-kit-styling": "^13.5.6"` → `"@workday/canvas-kit-styling": "^14.0.0"`
   - `"@workday/canvas-kit-preview-react": "^13.5.6"` →

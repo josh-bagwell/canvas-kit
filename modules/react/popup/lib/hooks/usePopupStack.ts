@@ -1,8 +1,12 @@
 import React from 'react';
 
 import {PopupStack} from '@workday/canvas-kit-popup-stack';
-import {useLocalRef, useCanvasThemeToCssVars, isElementRTL} from '@workday/canvas-kit-react/common';
-import {ThemeContext, Theme} from '@emotion/react';
+import {
+  CanvasBrandStyleContext,
+  CanvasThemeAttributeContext,
+  isElementRTL,
+  useLocalRef,
+} from '@workday/canvas-kit-react/common';
 
 /**
  * **Note:** If you're using {@link Popper}, you do not need to use this hook directly.
@@ -51,10 +55,10 @@ export const usePopupStack = <E extends HTMLElement>(
   target?: HTMLElement | React.RefObject<HTMLElement>
 ): React.RefObject<HTMLElement> => {
   const {elementRef, localRef} = useLocalRef(ref);
-  // Pulls the theme from the context so that we can pass it to `useCanvasThemeToCssVars`
-  const theme = React.useContext(ThemeContext as React.Context<Theme>);
 
-  const {className, style} = useCanvasThemeToCssVars(theme, {});
+  // Read brand style from the context provided by CanvasProvider
+  const style = React.useContext(CanvasBrandStyleContext);
+  const themeAttribute = React.useContext(CanvasThemeAttributeContext);
   const firstLoadRef = React.useRef(true); // React 19 can call a useState more than once, so we need to track if we've already created a container
 
   // useState function input ensures we only create a container once.
@@ -67,6 +71,51 @@ export const usePopupStack = <E extends HTMLElement>(
     }
     return localRef.current;
   });
+
+  // Forward only CSS custom properties to the popup container when a theme was provided via
+  // CanvasProvider. We do NOT apply defaultBranding (className) so we don't create a cascade
+  // barrier. Filter to `--*` keys and string values so consumer layout styles from the provider
+  // are not copied onto the popup stack. Runs before PopupStack.add to avoid a theme flash.
+  React.useLayoutEffect(() => {
+    const element = localRef.current;
+    if (!element) {
+      return undefined;
+    }
+    const styleKeys = Object.keys(style).filter(key => key.startsWith('--'));
+    if (styleKeys.length === 0) {
+      return undefined;
+    }
+    for (const key of styleKeys) {
+      const value = style[key as keyof typeof style];
+      if (typeof value !== 'string') {
+        continue;
+      }
+      element.style.setProperty(key, value);
+    }
+    // No cleanup: leave theme on container so reopening doesn't flash
+    return undefined;
+  }, [localRef, style]);
+
+  // Forward `data-theme` so the popup container matches the same attribute selector the token
+  // stylesheet scopes its variables to (e.g. `[data-theme="sana-canvas"]`). Portals render under
+  // `document.body`, outside the CanvasProvider wrapper, so without this none of those variables
+  // resolve — and unlike the inline styles above, this covers the *whole* theme (palette, shape,
+  // depth, type), not just the brand vars the theme object enumerates. Runs before PopupStack.add
+  // to avoid a theme flash.
+  React.useLayoutEffect(() => {
+    const element = localRef.current;
+    if (!element) {
+      return undefined;
+    }
+    if (themeAttribute) {
+      element.setAttribute('data-theme', themeAttribute);
+    } else {
+      element.removeAttribute('data-theme');
+    }
+    // No unmount cleanup: leave theme on container so reopening doesn't flash
+    return undefined;
+  }, [localRef, themeAttribute]);
+
   // We useLayoutEffect to ensure proper timing of registration of the element to the popup stack.
   // Without this, the timing is unpredictable when mixed with other frameworks. Other frameworks
   // should also register as soon as the element is available
@@ -90,11 +139,23 @@ export const usePopupStack = <E extends HTMLElement>(
   }, [localRef, target, popupRef]);
 
   // The direction will properly follow the theme via React context, but portals lose the `dir`
-  // hierarchy, so we'll add it back here.
+  // hierarchy, so we'll add it back here. When there's no target (e.g. consumer doesn't use
+  // Popup.Target), find the nearest element with a `dir` attribute: start from the focused element
+  // (the trigger) or body, then use closest('[dir]'). Prefer reading getAttribute('dir') when
+  // present to avoid getComputedStyle.
   React.useLayoutEffect(() => {
     const targetEl = target ? ('current' in target ? target.current : target) : undefined;
-    if (targetEl) {
-      const isRTL = isElementRTL(targetEl);
+    let elementToCheck: Element | undefined = targetEl ?? undefined;
+    if (elementToCheck == null && typeof document !== 'undefined') {
+      const active = document.activeElement;
+      const container = localRef.current;
+      const start = active && container && !container.contains(active) ? active : document.body;
+      elementToCheck = start.closest('[dir]') ?? document.documentElement;
+    }
+    if (elementToCheck) {
+      const explicitDir = elementToCheck.getAttribute('dir');
+      const isRTL =
+        explicitDir != null ? explicitDir.toLowerCase() === 'rtl' : isElementRTL(elementToCheck);
       if (isRTL) {
         localRef.current?.setAttribute('dir', 'rtl');
       } else {
@@ -102,40 +163,6 @@ export const usePopupStack = <E extends HTMLElement>(
       }
     }
   }, [localRef, target]);
-
-  /**
-   * This pulls the className that gets generated by `useCanvasThemeToCssVars` and adds it to the Popup element to ensure
-   * theming is applied. Popups get portaled to the DOM and therefore don't "live" inside the CanvasProvider.
-   * Forwarding the className that gets generated by `useCanvasThemeToCssVars` ensures theming works as expected.
-   */
-  React.useLayoutEffect(() => {
-    const element = localRef.current;
-
-    element?.classList.add(className.trim());
-    return () => {
-      element?.classList.remove(className.trim());
-    };
-  }, [localRef, className]);
-
-  React.useLayoutEffect(() => {
-    const element = localRef.current;
-    if (element) {
-      // eslint-disable-next-line guard-for-in
-      for (const key in style) {
-        // @ts-ignore
-        element.style.setProperty(key, style[key]);
-      }
-    }
-    return () => {
-      if (element) {
-        // eslint-disable-next-line guard-for-in
-        for (const key in style) {
-          // @ts-ignore
-          element.style.removeProperty(key, style[key]);
-        }
-      }
-    };
-  }, [localRef, style]);
 
   return localRef;
 };

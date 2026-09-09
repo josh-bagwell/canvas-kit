@@ -1,0 +1,136 @@
+---
+source_file: react/common/stories/mdx/Theming.mdx
+live_url: https://workday.github.io/canvas-kit/react/common/stories/mdx/Theming
+---
+
+# Canvas Kit Theming Guide
+
+Canvas Kit v16 components are Sana-aligned out of the box. The Sana Canvas **theme** is a separate,
+opt-in step that updates brand colors, neutrals, surfaces, and shapes at the application
+level.
+
+For a full list of what changes when you opt in, see the
+[v16 Upgrade Guide](https://workday.github.io/canvas-kit/?path=/docs/guides-upgrade-guides-v-16-0-overview--docs#sana-canvas-theme).
+
+## Sana Canvas Theme
+
+Import the Sana variables **last** in your root CSS and set `data-theme="sana-canvas"` on `<html>`.
+
+```css
+/* index.css — order matters */
+@import '@workday/canvas-tokens-web/css/base/_variables.css';
+@import '@workday/canvas-tokens-web/css/brand/_variables.css';
+@import '@workday/canvas-tokens-web/css/component/_variables.css';
+@import '@workday/canvas-tokens-web/css/system/_variables.css';
+@import '@workday/canvas-tokens-web/css/sana/_variables.css';
+
+:root {
+  /* Optional — override only if you have a custom brand color */
+  --cnvs-brand-primary-600: var(--cnvs-base-palette-magenta-600);
+}
+```
+
+```html
+<html lang="en" data-theme="sana-canvas"></html>
+```
+
+## Classic Canvas (without Sana theme)
+
+If you are not opting into the Sana Canvas theme, omit `data-theme` from `<html>`. The `:root`
+tokens apply as-is — no `theme` prop on `CanvasProvider` is required.
+
+```html
+<html lang="en"></html>
+```
+
+```tsx
+import {CanvasProvider} from '@workday/canvas-kit-react/common';
+
+<CanvasProvider>
+  <App />
+</CanvasProvider>
+```
+
+The sana stylesheet only defines `[data-theme="sana-canvas"]` overrides. Without that attribute,
+those rules do not apply.
+
+If your application **has** opted into Sana globally but one subsection needs classic Canvas branding,
+use `defaultBranding` on a scoped `CanvasProvider`:
+
+```tsx
+import {CanvasProvider, defaultBranding} from '@workday/canvas-kit-react/common';
+
+<CanvasProvider className={defaultBranding}>
+  <ClassicCanvasSection />
+</CanvasProvider>
+```
+
+## Scoped Theming
+
+Most application teams should use the Sana Canvas theme globally and not pass a `theme` prop to
+`CanvasProvider`. Use scoped theming only when a section of your app needs a different brand — for
+example, embedding Canvas in a third-party application, multi-tenant branding, or popup parity.
+
+The `theme` prop accepts a numerical `brand` object. Each key maps 1:1 to a `--cnvs-brand-*` CSS
+variable.
+
+| You set | Components affected |
+| ------- | ------------------- |
+| `brand.primary['600']` alone | `PrimaryButton`, selected `Menu.Item` (text + background) |
+| `focus.primary` | Focus rings, border primary (independent of primary brand) |
+| `brand.action.*` | `PrimaryButton` (read before `brand.primary`) |
+| `brand.critical.*` | `TextInput` error, critical accents |
+| `brand.caution.*` | `TextInput` caution, caution focus |
+| `brand.positive.*` | `Checkbox`, `Radio` checked states |
+| `brand.neutral.*` | Neutral brand text/surfaces |
+| `selected.fg` / `selected.surface` | Selected list/menu states directly |
+
+**Focus does not follow primary.** Setting only `brand.primary['600']` leaves focus rings at the
+default blue unless you also set `focus.primary`.
+
+```tsx
+import {CanvasProvider} from '@workday/canvas-kit-react/common';
+import {base} from '@workday/canvas-tokens-web';
+
+<CanvasProvider theme={{brand: {primary: {'600': base.magenta600}}}}>
+  <ScopedSection />
+</CanvasProvider>
+```
+
+Popups (including menus, selects, modals, and toasts) portal to `document.body` — outside the
+parent component's DOM hierarchy. How theming reaches them:
+
+**Preferred — you control the document root:** set `data-theme="sana-canvas"` on the `<html>`
+element. Popups inherit Sana CSS variables automatically; no `theme` prop needed:
+
+```tsx
+import {CanvasProvider} from '@workday/canvas-kit-react/common';
+
+// <html data-theme="sana-canvas">
+<CanvasProvider>
+  <App />
+</CanvasProvider>
+```
+
+**Scoped / no document-root control:** if you cannot set `data-theme` on `<html>` (embedded apps,
+microfrontends, third-party shells), a nested `data-theme` alone does **not** reach portaled
+popups. Pass both `data-theme="sana-canvas"` (for in-tree UI) and `sanaCanvasProviderTheme` (so
+Canvas Kit forwards Sana brand variables onto the popup stack container):
+
+```tsx
+import {CanvasProvider, sanaCanvasProviderTheme} from '@workday/canvas-kit-react/common';
+
+<CanvasProvider theme={sanaCanvasProviderTheme} data-theme="sana-canvas">
+  <App />
+</CanvasProvider>
+```
+
+`sanaCanvasProviderTheme` is also useful in tests without global Sana CSS or with custom popup
+hosts outside the normal document flow.
+
+See the
+[Sana Canvas](https://workday.github.io/canvas-kit/?path=/story/features-theming--sana-canvas)
+Storybook story for a side-by-side comparison of global and scoped branding.
+
+View token documentation
+[here](https://workday.github.io/canvas-tokens/?path=/docs/docs-getting-started--docs).

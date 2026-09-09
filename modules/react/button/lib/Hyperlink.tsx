@@ -1,18 +1,28 @@
 import * as React from 'react';
+
 import {createComponent} from '@workday/canvas-kit-react/common';
-import {createStencil, CSProps, cssVar, handleCsProp, px2rem} from '@workday/canvas-kit-styling';
-import {system, brand} from '@workday/canvas-tokens-web';
+import {CSProps, createStencil, handleCsProp, px2rem} from '@workday/canvas-kit-styling';
+import {system} from '@workday/canvas-tokens-web';
 
 export interface HyperlinkProps extends CSProps {
   /**
-   * sets modifier styles for Hyperlink
-   * - `inverse`: sets the color to white and updates hover, focus, and active pseudo-classes
-   * - `standalone`: removes the underline of the Hyperlink. This is useful when a hyperlink is used outside the context of a paragraph or body text.
-   * - `standaloneInverse`: removes the underline of the Hyperlink and sets the color to white. This is useful when a hyperlink is used outside the context of a paragraph or body text on a dark background.
+   * Sets color styles for Hyperlink
+   * - `inverse`: sets the color to white and updates hover, focus, and active pseudo-classes. Use this
+   *   variant on dark backgrounds.
+   * - `secondary`: sets the color to a dark gray (keeps the underline by default). Use this
+   *   variant on colored backgrounds.
    */
-  variant?: 'inverse' | 'standalone' | 'standaloneInverse';
+  variant?: 'inverse' | 'secondary';
   /**
-   * attribute for the hyperlink URL
+   * Sets underline behavior for Hyperlink
+   * - `inline` (default): keeps the underline. Use when the hyperlink appears in body text.
+   * - `standalone`: removes the underline. Use when a hyperlink is outside paragraph or body text.
+   *
+   * @default 'inline'
+   */
+  linkType?: 'inline' | 'standalone';
+  /**
+   * Attribute for the hyperlink URL
    */
   href?: string;
   children?: React.ReactNode;
@@ -22,59 +32,63 @@ export const hyperlinkStencil = createStencil({
   base: {
     fontFamily: system.fontFamily.default,
     textDecoration: 'underline',
-    color: system.color.text.primary.default,
+    color: system.color.fg.link.default,
     cursor: 'pointer',
-    borderRadius: system.shape.half,
-    padding: `0 ${px2rem(2)} `,
+    borderRadius: px2rem(2),
+    padding: `0 ${px2rem(2)}`,
     margin: '0 -2px',
     transition: 'color 0.15s,background-color 0.15s',
     wordBreak: 'break-word',
     '&:hover, &.hover': {
-      color: system.color.text.primary.strong,
-      background: system.color.bg.alt.soft,
+      color: system.color.fg.link.hover,
+      background: system.legacy.color.surface.overlay.hover.default,
     },
     '&:focus, &.focus, &:focus-visible': {
-      boxShadow: `0 0 0 ${px2rem(2)} ${cssVar(brand.common.focusOutline)}`,
+      boxShadow: `0 0 0 ${px2rem(2)} ${system.legacy.color.brand.focus.primary}`,
       outline: 'none',
+      // Windows High Contrast Mode ignores `boxShadow`, so provide an explicit
+      // outline to keep the focus indicator visible.
+      '@media (forced-colors: active)': {
+        outline: `solid ${px2rem(2)} ButtonBorder`,
+      },
     },
     '&:active, &.active': {
-      color: system.color.text.primary.stronger,
-      background: system.color.bg.alt.default,
+      color: system.color.fg.link.hover,
+      background: system.legacy.color.surface.overlay.pressed.default,
     },
   },
   modifiers: {
     variant: {
       inverse: {
-        color: system.color.text.inverse,
+        color: system.color.fg.inverse,
         '&:hover, &.hover': {
-          color: system.color.text.inverse,
+          color: system.color.fg.inverse,
           background: 'rgba(255, 255, 255, 0.1)',
         },
         '&:focus, &.focus, &:focus-visible': {
-          boxShadow: `0 0 0 ${px2rem(2)}  ${cssVar(system.color.text.inverse)}`,
+          boxShadow: `0 0 0 ${px2rem(2)}  ${system.color.fg.inverse}`,
         },
         '&:active, &.active': {
-          color: system.color.text.primary.stronger,
-          background: system.color.bg.alt.soft,
+          color: system.color.fg.link.hover,
+          background: system.legacy.color.surface.navigation,
         },
       },
+      secondary: {
+        color: system.color.fg.default,
+        '&:hover, &.hover': {
+          color: system.color.fg.strong,
+          background: system.legacy.color.surface.overlay.hover.default,
+        },
+        '&:active, &.active': {
+          color: system.color.fg.strong,
+          background: system.legacy.color.surface.overlay.pressed.default,
+        },
+      },
+    },
+    linkType: {
+      inline: {},
       standalone: {
         textDecoration: 'none',
-      },
-      standaloneInverse: {
-        textDecoration: 'none',
-        color: system.color.text.inverse,
-        '&:hover, &.hover': {
-          color: system.color.text.inverse,
-          background: 'rgba(255, 255, 255, 0.1)',
-        },
-        '&:focus, &.focus, &:focus-visible': {
-          boxShadow: `0 0 0 ${px2rem(2)}  ${cssVar(system.color.text.inverse)}`,
-        },
-        '&:active, &.active': {
-          color: system.color.text.primary.stronger,
-          background: system.color.bg.alt.soft,
-        },
       },
     },
   },
@@ -86,8 +100,12 @@ export const hyperlinkStencil = createStencil({
  */
 export const Hyperlink = createComponent('a')({
   displayName: 'Hyperlink',
-  Component: ({children, variant, ...elemProps}: HyperlinkProps, ref, Element) => (
-    <Element ref={ref} {...handleCsProp(elemProps, hyperlinkStencil({variant}))}>
+  Component: (
+    {children, variant, linkType = 'inline', ...elemProps}: HyperlinkProps,
+    ref,
+    Element
+  ) => (
+    <Element ref={ref} {...handleCsProp(elemProps, hyperlinkStencil({variant, linkType}))}>
       {children}
     </Element>
   ),

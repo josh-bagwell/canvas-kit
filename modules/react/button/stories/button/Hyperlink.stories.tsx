@@ -1,13 +1,14 @@
 import {Meta, StoryObj} from '@storybook/react';
 
 import mdxDoc from './Hyperlink.mdx';
-
-import {Link as LinkExample} from './examples/Hyperlink';
-import {LinkInverse as LinkInverseExample} from './examples/HyperlinkInverse';
 import {ExternalLink as ExternalLinkExample} from './examples/ExternalHyperlink';
 import {ExternalLinkInverse as ExternalLinkInverseExample} from './examples/ExternalHyperlinkInverse';
-import {StandaloneLink as StandaloneLinkExample} from './examples/StandaloneHyperlink';
+import {ExternalLinkRTL as ExternalLinkRTLExample} from './examples/ExternalHyperlinkRTL';
+import {Link as LinkExample} from './examples/Hyperlink';
 import {InBodyText as InBodyTextExample} from './examples/HyperlinkInBodyText';
+import {LinkInverse as LinkInverseExample} from './examples/HyperlinkInverse';
+import {SecondaryLink as SecondaryLinkExample} from './examples/SecondaryHyperlink';
+import {StandaloneLink as StandaloneLinkExample} from './examples/StandaloneHyperlink';
 
 export default {
   title: 'Components/Hyperlink',
@@ -31,9 +32,14 @@ export const ExternalLink: StoryObj = {
 export const ExternalLinkInverse: StoryObj = {
   render: ExternalLinkInverseExample,
 };
-
+export const ExternalLinkRTL: StoryObj = {
+  render: ExternalLinkRTLExample,
+};
 export const StandaloneLink: StoryObj = {
   render: StandaloneLinkExample,
+};
+export const SecondaryLink: StoryObj = {
+  render: SecondaryLinkExample,
 };
 export const InBodyText: StoryObj = {
   render: InBodyTextExample,

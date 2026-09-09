@@ -1,8 +1,9 @@
 import {ErrorType, createComponent} from '@workday/canvas-kit-react/common';
-import {createStencil, calc, px2rem} from '@workday/canvas-kit-styling';
-import {brand, system} from '@workday/canvas-tokens-web';
 import {SystemIcon, systemIconStencil} from '@workday/canvas-kit-react/icon';
+import {calc, createStencil, px2rem} from '@workday/canvas-kit-styling';
 import {checkSmallIcon} from '@workday/canvas-system-icons-web';
+import {component, system} from '@workday/canvas-tokens-web';
+
 import {CheckBackground} from './CheckBackground';
 
 interface CheckboxCheckProps {
@@ -14,13 +15,15 @@ interface CheckboxCheckProps {
 
 const checkboxCheckStencil = createStencil({
   base: {
+    [systemIconStencil.vars.size]: component.legacy.systemIcon.size.md,
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
     maxWidth: '100%',
     pointerEvents: 'none',
     transition: 'transform 200ms ease, opacity 200ms ease',
     span: {
-      marginInlineStart: calc.negate(px2rem(6)),
+      marginInlineStart: calc.negate(px2rem(5)),
       transition: 'margin 200ms ease',
     },
     opacity: system.opacity.zero,
@@ -29,7 +32,7 @@ const checkboxCheckStencil = createStencil({
   modifiers: {
     checked: {
       true: {
-        [systemIconStencil.vars.color]: brand.primary.accent,
+        [systemIconStencil.vars.color]: system.color.fg.inverse,
         opacity: system.opacity.full,
         transform: 'scale(1)',
       },
@@ -42,9 +45,10 @@ const checkboxCheckStencil = createStencil({
     },
     variant: {
       inverse: {
-        [systemIconStencil.vars.color]: brand.primary.base,
+        [systemIconStencil.vars.color]: system.legacy.color.brand.accent.primary,
+
         '& > div': {
-          backgroundColor: brand.primary.base,
+          backgroundColor: system.legacy.color.brand.accent.primary,
         },
       },
     },
@@ -54,8 +58,15 @@ const checkboxCheckStencil = createStencil({
 const indeterminateBoxStencil = createStencil({
   base: {
     width: px2rem(10),
-    height: calc.divide(system.space.x1, 2),
-    backgroundColor: brand.primary.accent,
+    height: px2rem(2),
+    backgroundColor: system.color.fg.inverse,
+  },
+  modifiers: {
+    variant: {
+      inverse: {
+        backgroundColor: system.legacy.color.brand.accent.positive,
+      },
+    },
   },
 });
 
@@ -63,10 +74,10 @@ export const CheckboxCheck = createComponent('div')({
   displayName: 'CheckboxCheck',
   Component: ({checked, error, indeterminate, variant}: CheckboxCheckProps) => {
     return (
-      <CheckBackground error={error}>
+      <CheckBackground error={error} variant={variant}>
         <div {...checkboxCheckStencil({checked, indeterminate, variant})}>
           {indeterminate ? (
-            <div {...indeterminateBoxStencil()} />
+            <div {...indeterminateBoxStencil({variant})} />
           ) : (
             checked && <SystemIcon icon={checkSmallIcon} />
           )}

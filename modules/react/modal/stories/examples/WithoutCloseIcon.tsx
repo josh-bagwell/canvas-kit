@@ -1,17 +1,17 @@
 import React from 'react';
 
+import {DeleteButton} from '@workday/canvas-kit-react/button';
+import {useUniqueId} from '@workday/canvas-kit-react/common';
+import {Box} from '@workday/canvas-kit-react/layout';
 import {Modal} from '@workday/canvas-kit-react/modal';
 import {
-  usePopupModel,
-  useInitialFocus,
-  useReturnFocus,
-  useFocusTrap,
   useAssistiveHideSiblings,
   useDisableBodyScroll,
+  useFocusTrap,
+  useInitialFocus,
+  usePopupModel,
+  useReturnFocus,
 } from '@workday/canvas-kit-react/popup';
-import {DeleteButton} from '@workday/canvas-kit-react/button';
-import {Flex, Box} from '@workday/canvas-kit-react/layout';
-import {useUniqueId} from '@workday/canvas-kit-react/common';
 
 export const WithoutCloseIcon = () => {
   const longDescId = useUniqueId();
@@ -37,16 +37,16 @@ export const WithoutCloseIcon = () => {
         <Modal.Card aria-describedby={longDescId}>
           <Modal.Heading>Delete Item</Modal.Heading>
           <Modal.Body>
-            <Box as="p" id={longDescId} marginY="zero">
+            <Box as="p" id={longDescId} cs={{marginBlock: '0'}}>
               Are you sure you want to delete the item?
             </Box>
           </Modal.Body>
-          <Flex gap="s" padding="xxs">
+          <Modal.ButtonGroup>
             <Modal.CloseButton ref={cancelBtnRef}>Cancel</Modal.CloseButton>
             <Modal.CloseButton as={DeleteButton} onClick={handleDelete}>
               Delete
             </Modal.CloseButton>
-          </Flex>
+          </Modal.ButtonGroup>
         </Modal.Card>
       </Modal.Overlay>
     </Modal>

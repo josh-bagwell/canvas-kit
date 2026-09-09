@@ -1,13 +1,15 @@
 import React from 'react';
+
+import {DeleteButton} from '@workday/canvas-kit-react/button';
 import {PartialEmotionCanvasTheme} from '@workday/canvas-kit-react/common';
 import {
   ComponentStatesTable,
-  permutateProps,
   StaticStates,
+  permutateProps,
 } from '@workday/canvas-kit-react/testing';
-import {customColorTheme} from '../../../../../utils/storybook';
-import {DeleteButton} from '@workday/canvas-kit-react/button';
 import {trashIcon} from '@workday/canvas-system-icons-web';
+
+import {customColorTheme} from '../../../../../utils/storybook';
 import {Container, stateTableColumnProps} from './utils';
 
 export default {
@@ -25,6 +27,10 @@ const DeleteButtonTest = (props: {theme?: PartialEmotionCanvasTheme}) => (
     <ComponentStatesTable
       rowProps={permutateProps(
         {
+          variant: [
+            {value: undefined, label: ''},
+            {value: 'outline', label: 'Outline'},
+          ],
           size: [
             {value: 'extraSmall', label: 'Extra Small'},
             {value: 'small', label: 'Small'},

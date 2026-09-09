@@ -1,10 +1,12 @@
 import React from 'react';
-import {Modal, useModalModel} from '@workday/canvas-kit-react/modal';
+
 import {PrimaryButton} from '@workday/canvas-kit-react/button';
-import {FormField} from '@workday/canvas-kit-react/form-field';
-import {TextInput} from '@workday/canvas-kit-react/text-input';
-import {Flex, Box} from '@workday/canvas-kit-react/layout';
 import {useUniqueId} from '@workday/canvas-kit-react/common';
+import {FormField} from '@workday/canvas-kit-react/form-field';
+import {Box} from '@workday/canvas-kit-react/layout';
+import {Modal, useModalModel} from '@workday/canvas-kit-react/modal';
+import {TextInput} from '@workday/canvas-kit-react/text-input';
+import {system} from '@workday/canvas-tokens-web';
 
 export const CustomFocus = () => {
   const longDescID = useUniqueId();
@@ -26,25 +28,26 @@ export const CustomFocus = () => {
           <Modal.CloseIcon aria-label="Close" />
           <Modal.Heading>Acknowledge License</Modal.Heading>
           <Modal.Body>
-            <Box as="p" id={longDescID} marginTop={0} marginBottom="m">
+            <Box as="p" id={longDescID} cs={{marginBlockStart: 0, marginBlockEnd: system.gap.md}}>
               Enter your initials to acknowledge the license.
             </Box>
-            <FormField cs={{marginBottom: 0}}>
+            <FormField>
               <FormField.Label>Initials</FormField.Label>
               <FormField.Input
                 as={TextInput}
                 ref={ref}
                 value={value}
+                grow
                 onChange={e => setValue(e.currentTarget.value)}
               />
             </FormField>
           </Modal.Body>
-          <Flex gap="s" padding="xxs">
+          <Modal.ButtonGroup>
+            <Modal.CloseButton>Cancel</Modal.CloseButton>
             <Modal.CloseButton as={PrimaryButton} onClick={handleAcknowledge}>
               Acknowledge
             </Modal.CloseButton>
-            <Modal.CloseButton>Cancel</Modal.CloseButton>
-          </Flex>
+          </Modal.ButtonGroup>
         </Modal.Card>
       </Modal.Overlay>
     </Modal>

@@ -1,16 +1,16 @@
 import React from 'react';
-import {createModelHook, useModalityType} from '@workday/canvas-kit-react/common';
+
 import {
   defaultGetId,
   useListModel,
   useOverflowListModel,
 } from '@workday/canvas-kit-react/collection';
-
+import {createModelHook, useModalityType} from '@workday/canvas-kit-react/common';
 import {useMenuModel} from '@workday/canvas-kit-react/menu';
 
 /**
  * The TabsModel extends the [Collection
- * System](/getting-started/for-developers/resources/collection-api/). Tabs have tab items and
+ * System](/get-started/for-developers/guides/collection-api/). Tabs have tab items and
  * panels. Tabs can be overflowed if there isn't enough room to render and will overflow to a
  * {@link MenuModel} sub-model.
  *
@@ -67,8 +67,8 @@ export const useTabsModel = createModelHook({
       initialSelectedIds: config.initialTab
         ? [config.initialTab]
         : config.items?.length
-        ? [getId(config.items![0])]
-        : [],
+          ? [getId(config.items![0])]
+          : [],
       shouldVirtualize: false,
     })
   );
@@ -110,21 +110,26 @@ export const useTabsModel = createModelHook({
     unregisterPanel: panels.events.unregisterItem,
   };
 
-  const menu = useMenuModel(
-    useMenuModel.mergeConfig(config.menuConfig, {
-      id: `menu-${model.state.id}`,
-      items: overflowItems,
-      nonInteractiveIds: state.nonInteractiveIds.filter(key => !state.hiddenIds.includes(key)),
-      onSelect(data) {
-        menu.events.hide();
-        events.select(data);
-      },
-      onShow() {
-        // Always select the first item when the menu is opened
-        menu.events.goToFirst();
-      },
-    })
-  );
+  const mergedMenuConfig = useMenuModel.mergeConfig(config.menuConfig, {
+    id: `menu-${model.state.id}`,
+    items: overflowItems,
+    // `getId`/`getTextValue` aren't callbacks or guards, so `mergeConfig` would let these
+    // unconditionally clobber a `menuConfig.getId`/`getTextValue` override. Fall back to the
+    // top-level Tabs config only when the caller hasn't set one on `menuConfig` directly.
+    getId: config.menuConfig?.getId || getId,
+    getTextValue: config.menuConfig?.getTextValue || config.getTextValue,
+    nonInteractiveIds: state.nonInteractiveIds.filter(key => !state.hiddenIds.includes(key)),
+    onSelect(data) {
+      menu.events.hide();
+      events.select(data);
+    },
+    onShow() {
+      // Always select the first item when the menu is opened
+      menu.events.goToFirst();
+    },
+  });
+
+  const menu = useMenuModel(mergedMenuConfig);
 
   return {
     ...model,

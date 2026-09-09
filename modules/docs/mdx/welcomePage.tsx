@@ -1,38 +1,34 @@
 // @ts-ignore: Cannot find module error
-import headerImage from './ck-banner.jpg';
-// @ts-ignore: Cannot find module error
-import componentsImage from './Components.png';
-// @ts-ignore: Cannot find module error
-import tokensImage from './Tokens.png';
-// @ts-ignore: Cannot find module error
-import stylingImage from './Styling.png';
-import {Flex, Grid, Box} from '@workday/canvas-kit-react/layout';
-import {InstallBlock} from './installBlock';
-import {Text, Heading} from '@workday/canvas-kit-react/text';
-import {Card} from '@workday/canvas-kit-react/card';
 import {ExternalHyperlink, Hyperlink} from '@workday/canvas-kit-react/button';
-import {system} from '@workday/canvas-tokens-web';
+import {Card} from '@workday/canvas-kit-react/card';
+import {SystemIcon} from '@workday/canvas-kit-react/icon';
+import {Box, Flex, Grid} from '@workday/canvas-kit-react/layout';
+import {Heading, Text} from '@workday/canvas-kit-react/text';
 import {createStyles} from '@workday/canvas-kit-styling';
-import {Graphic} from '@workday/canvas-kit-react/icon';
+import {fontEditIcon, rocketIcon, tokensIcon} from '@workday/canvas-system-icons-web';
+import {system} from '@workday/canvas-tokens-web';
+
 // @ts-ignore: Cannot find module error
 import {version} from '../../../lerna.json';
+import {InstallBlock} from './installBlock';
+import headerImage from './sana-canvas-header.jpg';
 
 const parentFlexStyles = createStyles({
   display: 'flex',
   flexDirection: 'column',
-  gap: system.space.x4,
-  marginBottom: system.space.x6,
+  gap: system.gap.md,
+  marginBlockEnd: system.gap.lg,
 });
 
 const bannerTextStyles = createStyles({
-  color: system.color.text.inverse,
+  color: system.color.fg.inverse,
   fontSize: '5vmin',
   lineHeight: '5vmin',
 });
 
 const versionStyles = createStyles({
-  ...system.type.body.medium,
-  marginInlineStart: system.space.x4,
+  ...system.type.body.md,
+  marginInlineStart: system.gap.md,
 });
 
 const imageStyles = createStyles({
@@ -40,15 +36,24 @@ const imageStyles = createStyles({
   height: 'auto',
 });
 
-const gridStyles = createStyles({
-  maxHeight: 400,
-  gridTemplateRows: '1fr 1fr 2fr 1fr',
-  display: 'grid',
+const cardHeaderStyles = createStyles({
+  display: 'flex',
+  alignItems: 'center',
+  gap: system.gap.xs,
+});
+
+const cardStyles = createStyles({
+  height: '100%',
+});
+
+const cardBodyStyles = createStyles({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
 });
 
 const linkStyles = createStyles({
-  alignSelf: 'end',
-  marginTop: system.space.x3,
+  marginBlockStart: 'auto',
 });
 
 export const WelcomePage = () => {
@@ -73,65 +78,71 @@ export const WelcomePage = () => {
           <ExternalHyperlink
             href="https://canvas.workdaydesign.com/"
             iconLabel="Open docs in new window"
-            cs={{marginInlineStart: system.space.x1}}
+            cs={{marginInlineStart: system.gap.xs}}
           >
             Workday Design Principles.
           </ExternalHyperlink>
         </Text>
         <Heading size="medium">Quick Links</Heading>
         <Grid
-          gridAutoColumns="auto"
-          gridTemplateColumns="repeat(auto-fill, minmax(250px, 1fr))"
-          gridGap="s"
+          cs={{
+            gridAutoColumns: 'auto',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+            gridGap: system.gap.sm,
+            alignItems: 'stretch',
+          }}
         >
-          <Grid as={Card} className={gridStyles}>
-            <Graphic src={{url: componentsImage}} />
-            <Card.Heading>Getting Started</Card.Heading>
-            <Card.Body>
+          <Card className={cardStyles}>
+            <Flex className={cardHeaderStyles}>
+              <SystemIcon icon={rocketIcon} aria-hidden="true" />
+              <Card.Heading>Getting Started</Card.Heading>
+            </Flex>
+            <Card.Body className={cardBodyStyles}>
               <Text>For all things getting started including helpful guides and docs.</Text>
+              <Hyperlink
+                className={linkStyles}
+                href="https://workday.github.io/canvas-kit/?path=/docs/guides-getting-started--docs"
+              >
+                Getting Started Guide
+              </Hyperlink>
             </Card.Body>
-            <Grid.Item
-              as={Hyperlink}
-              className={linkStyles}
-              href="https://workday.github.io/canvas-kit/?path=/docs/guides-getting-started--docs"
-            >
-              Getting Started Guide
-            </Grid.Item>
-          </Grid>
-          <Grid as={Card} className={gridStyles}>
-            <Graphic src={{url: tokensImage}} />
-            <Card.Heading>Tokens</Card.Heading>
-            <Card.Body>
+          </Card>
+          <Card className={cardStyles}>
+            <Flex className={cardHeaderStyles}>
+              <SystemIcon icon={tokensIcon} aria-hidden="true" />
+              <Card.Heading>Tokens</Card.Heading>
+            </Flex>
+            <Card.Body className={cardBodyStyles}>
               <Text>
                 Tokens are the smallest pieces of our Design System with the primary function of
                 storing UI information.
               </Text>
+              <ExternalHyperlink
+                className={linkStyles}
+                href="https://workday.github.io/canvas-tokens/?path=/docs/docs-getting-started--docs"
+              >
+                View Our Tokens
+              </ExternalHyperlink>
             </Card.Body>
-            <Grid.Item
-              as={ExternalHyperlink}
-              className={linkStyles}
-              href="https://workday.github.io/canvas-tokens/?path=/docs/docs-getting-started--docs"
-            >
-              View Our Tokens
-            </Grid.Item>
-          </Grid>
-          <Grid as={Card} className={gridStyles}>
-            <Graphic src={{url: stylingImage}} />
-            <Card.Heading>Styling</Card.Heading>
-            <Card.Body>
+          </Card>
+          <Card className={cardStyles}>
+            <Flex className={cardHeaderStyles}>
+              <SystemIcon icon={fontEditIcon} aria-hidden="true" />
+              <Card.Heading>Styling</Card.Heading>
+            </Flex>
+            <Card.Body className={cardBodyStyles}>
               <Text>
                 Learn how to style Canvas components using tokens, theming, and custom CSS
                 approaches.
               </Text>
+              <Hyperlink
+                className={linkStyles}
+                href="https://workday.github.io/canvas-kit/?path=/docs/styling-getting-started-overview--docs"
+              >
+                Get Started
+              </Hyperlink>
             </Card.Body>
-            <Grid.Item
-              as={Hyperlink}
-              className={linkStyles}
-              href="https://workday.github.io/canvas-kit/?path=/docs/styling-getting-started-overview--docs"
-            >
-              Get Started
-            </Grid.Item>
-          </Grid>
+          </Card>
         </Grid>
         <Heading size="medium">Installation</Heading>
         <Text>

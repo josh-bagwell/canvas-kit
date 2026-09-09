@@ -1,23 +1,29 @@
-import {ExampleCodeBlock, SymbolDoc, Specifications} from '@workday/canvas-kit-docs';
+import {Meta} from '@storybook/blocks';
 
+import {ExampleCodeBlock, Specifications, SymbolDoc} from '@workday/canvas-kit-docs';
+
+import ModalStoriesMeta from './Modal.stories';
 import {Basic} from './examples/Basic';
-import {WithoutCloseIcon} from './examples/WithoutCloseIcon';
-import {CustomFocus} from './examples/CustomFocus';
-import {ReturnFocus} from './examples/ReturnFocus';
-import {CustomTarget} from './examples/CustomTarget';
 import {BodyOverflow} from './examples/BodyOverflow';
-import {FullOverflow} from './examples/FullOverflow';
+import {CustomFocus} from './examples/CustomFocus';
+import {CustomTarget} from './examples/CustomTarget';
 import {FormModal} from './examples/FormModal';
-import * as ModalStories from './Modal.stories';
+import {FullOverflow} from './examples/FullOverflow';
+import {ReturnFocus} from './examples/ReturnFocus';
+import {WithoutCloseIcon} from './examples/WithoutCloseIcon';
 
-<Meta of={ModalStories} />
+<Meta of={ModalStoriesMeta} />
 
 # Canvas Kit Modal
 
 A Modal component is a type of Dialog that renders a translucent overlay that prevents user
 interaction with the rest of the page. A Modal will render the rest of the page inert until the
-Modal is dismissed. A Modal should be used when the user needs to presented with important
+Modal is dismissed. A Modal should be used when the user needs to be presented with important
 information that must be interacted with before continuing interaction with the rest of the page.
+
+For tasks that do not require blocking the rest of the page, consider the non-modal
+[**Dialog**](https://workday.github.io/canvas-kit/?path=/docs/components-popups-dialog--docs)
+component instead.
 
 ## Installation
 
@@ -27,7 +33,7 @@ yarn add @workday/canvas-kit-react
 
 ## Usage
 
-### Basic
+### Basic Example
 
 The basic behavior of a modal is to hide all content from all users that is "behind" the modal
 dialog.
@@ -36,10 +42,10 @@ dialog.
 
 ### Without Close Icon
 
-If you wish to remove the close icon button, you can simply omit the `Modal.CloseButton`
-subcomponent. If you have a modal dialog that requires the user to accept instead of dismiss though
-an escape key or clicking outside the modal, you must create a new `PopupModel` without those
-behaviors and hand that model to the Modal dialog component.
+If you wish to remove the close icon button, you can simply omit the `Modal.CloseIcon` subcomponent.
+If you have a modal dialog that requires the user to accept instead of dismiss through an escape key
+or clicking outside the modal, you must create a new `PopupModel` without those behaviors and hand
+that model to the Modal dialog component.
 
 <ExampleCodeBlock code={WithoutCloseIcon} />
 
@@ -55,17 +61,28 @@ element receives focus when the modal opens.
 
 <ExampleCodeBlock code={CustomFocus} />
 
+> **Accessibility Note**: When initial focus lands on a control **below** the heading (for example,
+> a text field instead of the close button), give supplementary copy a unique `id` and pass
+> **`aria-describedby`** on **`Modal.Card`** so screen readers can announce both the dialog name and
+> that text. For more examples of custom focus techniques, see
+> [Popup > Initial Focus](https://workday.github.io/canvas-kit/?path=/docs/components-popups-popup--docs#initial-focus).
+
 ### Return Focus
 
-By default, the Modal will return focus to the `Modal.Target` element, but it is possible the Modal
-was triggered by an element that won't exist when the modal is closed. An example might be a Modal
-that was opened from an Menu item and the act of opening the Modal also closes the Menu, meaning the
-Menu item can no longer receive focus. The also probably means the `Modal.Target` component might
-not suite your needs. The `Modal.Target` adds both a `ref` and an `onClick`. If you provide a
-`returnFocusRef`, you only need to worry about the `onClick`. If you're using a menu, you might need
-to use a different callback. Calling `model.events.show()` will show the Modal.
+By default, the Modal will return focus to the `Modal.Target` element. When you open the modal with
+`model.events.show()` (without `Modal.Target`), set **`returnFocusRef`** on the model to the element
+that should receive focus when the modal closes—for example the button that opened it. That covers
+cancel, Escape, and the close icon: focus returns to the control the user activated.
+
+If confirming an action **removes** that control from the document (such as deleting the row that
+held the delete button), `returnFocusRef` alone cannot land on a **new** target. The example below
+uses **`useLayoutEffect`** after the list updates to move focus to another row’s delete control, or
+to empty-state text when no files remain.
 
 <ExampleCodeBlock code={ReturnFocus} />
+
+> **Accessibility Note**: After an item is deleted, focus is returned to the next item in the list
+> or to the empty state text when no items remain.
 
 ### Custom Target
 
@@ -82,6 +99,12 @@ requires a `label` prop.
 
 <ExampleCodeBlock code={CustomTarget} />
 
+> **Accessibility Note**: Custom targets must be keyboard focusable, otherwise users will not be
+> able to access the modal. Bear in mind that click handlers only work with the keyboard when
+> applied to HTML `<button>` elements and it is **strongly recommended** to base your custom target
+> on a `<button>` element. Otherwise, you will be required to build in your own custom keyboard
+> event handlers for invoking the modal.
+
 ### Body Content Overflow
 
 The Modal automatically handles overflowing content inside the `Modal.Body` element. If contents are
@@ -89,6 +112,11 @@ larger than the browser's height will allow, the content will overflow with a sc
 need to restrict the height of your browser to observe the overflow.
 
 <ExampleCodeBlock code={BodyOverflow} />
+
+> **Accessibility Note**: When body content overflows, ensure users can scroll that region **using
+> only the keyboard**. Mouse users can drag scrollbars, but keyboard users need another path. In
+> this example, **`tabIndex={0}`** is set on **`Modal.Body`** so the scrollable area can receive
+> focus; once focused, **arrow keys** move the viewport within the overflowing content.
 
 ### Full overlay scrolling
 
@@ -108,10 +136,240 @@ hoisted to allow for form validation and allow you to control when the modal clo
 
 <ExampleCodeBlock code={FormModal} />
 
+## Accessibility
+
+Ensure users of assistive technology can discover, name, and operate a **modal** dialog: the rest of
+the page is blocked by an overlay, background content is hidden from assistive technology via
+sibling **`aria-hidden`**, keyboard focus is trapped inside the modal, the dialog has an accessible
+name that matches its visible heading, and keyboard users can open and dismiss it predictably.
+
+Use **Modal** when the user must complete or acknowledge a task before continuing with the page. For
+non-blocking tasks, use
+[**Dialog**](https://workday.github.io/canvas-kit/?path=/docs/components-popups-dialog--docs)
+instead. Prefer **Modal** for the standard blocking dialog; use
+[**Popup**](https://workday.github.io/canvas-kit/?path=/docs/components-popups-popup--docs) with
+composed hooks when you need a custom popup stack or to omit behaviors (for example Escape or
+overlay dismiss). For portals, reading order, and related tradeoffs, see
+[Guides > Accessibility > Inline Popups](https://workday.github.io/canvas-kit/?path=/docs/guides-accessibility-inline-popups--docs).
+See also the
+[Modal Dialog Pattern | APG | WAI | W3C](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
+
+### Minimum Accessible Structure
+
+The following matches the [Basic Example](#basic-example) layout: **`Modal.CloseIcon`** before
+**`Modal.Heading`** so open focus lands on the dismiss control first; primary actions use
+**`Modal.CloseButton`** (which closes the modal on activate).
+
+```tsx
+import {PrimaryButton} from '@workday/canvas-kit-react/button';
+import {Modal} from '@workday/canvas-kit-react/modal';
+
+<Modal>
+  <Modal.Target as={PrimaryButton}>Open</Modal.Target>
+  <Modal.Overlay>
+    <Modal.Card>
+      <Modal.CloseIcon aria-label="Close" />
+      <Modal.Heading>Title</Modal.Heading>
+      <Modal.Body>Content</Modal.Body>
+      <Modal.ButtonGroup>
+        <Modal.CloseButton>Cancel</Modal.CloseButton>
+        <Modal.CloseButton as={PrimaryButton}>Acknowledge</Modal.CloseButton>
+      </Modal.ButtonGroup>
+    </Modal.Card>
+  </Modal.Overlay>
+</Modal>;
+```
+
+Include a dismiss control: **`Modal.CloseButton`** with visible text (for example "Cancel" or
+"Close"), and/or **`Modal.CloseIcon`** when the design uses an icon-only dismiss (requires
+**`aria-label`** or **`Tooltip`**). Use **`Modal.CloseButton`** for actions that should also close
+the modal (for example "Acknowledge"). Compose with **`Modal.Overlay` → `Modal.Card`** (or
+**`Modal.OverflowOverlay`** when the entire overlay should scroll).
+
+### Built-in Behaviors
+
+Canvas Kit applies these automatically via `useModalModel` and Modal subcomponents. **Do not
+duplicate them** in consuming code.
+
+**Popup behaviors** (_composed on the default model_):
+
+- `useInitialFocus` — moves focus into the modal when it opens (default: first focusable element in
+  DOM order; optional override via `initialFocusRef` on the model)
+- `useReturnFocus` — returns focus to `Modal.Target` (or configured return target) when it closes
+- `useCloseOnOverlayClick` — pointer interaction on the overlay (outside the dialog) closes the
+  modal
+- `useCloseOnEscape` — <kbd>Escape</kbd> closes the modal
+- `useFocusTrap` — <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> cycle focus **inside** the modal
+  (keyboard focus does not leave the dialog)
+- `useAssistiveHideSiblings` — applies **`aria-hidden`** to siblings of the modal stack while open
+- `useDisableBodyScroll` — prevents background page scroll while the modal is open
+
+**ARIA and DOM** (_applied by hooks/subcomponents_):
+
+- `Modal.Card`: `role="dialog"`, `aria-labelledby` referencing the heading `id`, and
+  **`aria-modal="false"`**
+- `Modal.Heading`: `id` wired to `Modal.Card`'s `aria-labelledby`; when there is no icon-only close
+  button before the heading, `useModalHeading` may temporarily set **`tabindex="0"`** on the heading
+  so initial focus still lands near the start of the dialog
+- `Modal.CloseIcon` / `Modal.CloseButton`: `onClick` that calls `model.events.hide()`
+- `Modal.Target`: `ref` and `onClick` to open and to receive return focus
+
+**Keyboard** (_trigger is `Modal.Target`, default `SecondaryButton`_):
+
+- <kbd>Enter</kbd> / <kbd>Space</kbd> on the trigger opens the modal (standard button behavior)
+- On open and close, focus is managed by **`useInitialFocus`** and **`useReturnFocus`** (application
+  overrides: see **Focus management** in Accessibility Requirements)
+- <kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd> move focus through interactive elements
+  **inside** the modal; focus stays trapped within the dialog
+- <kbd>Escape</kbd> closes the modal and returns focus per `useReturnFocus` (unless Escape dismiss
+  is omitted via a custom model—see **Accept-only / no Escape dismiss**)
+
+**Screen reader expectations** (_when built-in behaviors are used as intended_):
+
+- On open, assistive technology should announce the first focused control (often a dismiss control),
+  the dialog name (`Modal.Heading`), and `dialog` role
+- Sibling elements of the modal stack receive **`aria-hidden="true"`** while the modal is visible,
+  which hides the rest of the page from many assistive technologies
+- Trapping **keyboard** focus does not stop all screen reader virtual-cursor movement outside the
+  dialog; treat the trap as the primary keyboard affordance, not a hard boundary—verify behavior in
+  your supported browser and screen reader combinations
+
+### Accessibility Requirements
+
+Required in application code for an accessible Modal. Hoist **`useModalModel`** when you need to
+configure focus targets, open without **`Modal.Target`**, or control when the modal closes (for
+example form validation). Rows marked _(conditional)_ apply only when the situation
+matches—otherwise omit.
+
+**If no design spec is provided:** use default focus behavior; include a dismiss control and
+**`Modal.Heading`**; omit **`initialFocusRef`**, **`returnFocusRef`**, and **`aria-describedby`**.
+Do not remove Escape or overlay dismiss unless the design requires accept-only confirmation.
+
+**Focus management — defaults and developer prompts:** Canvas Kit handles open and close focus
+automatically. **State the default to the developer first.** Only set **`initialFocusRef`** or
+**`returnFocusRef`** after the developer (or an explicit design spec) chooses a non-default target.
+**Do not generate focus refs by default.**
+
+| When             | Default behavior                                                                                                                                                                         | Ask the developer before overriding                                                                                                                                                                      |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modal **opens**  | **`useInitialFocus`** moves focus to the **first focusable element** in DOM order inside the modal (often **`Modal.CloseIcon`** or **`Modal.CloseButton`**). Omit **`initialFocusRef`**. | _Which element should receive focus when the modal opens?_ (Only when the default first focusable element is wrong for the design.) Attach **`initialFocusRef`** to that element on **`useModalModel`**. |
+| Modal **closes** | **`useReturnFocus`** moves focus to **`Modal.Target`**. Omit **`returnFocusRef`**.                                                                                                       | _Which element should receive focus when the modal closes?_ (Only when return focus should land somewhere other than **`Modal.Target`**.)                                                                |
+
+If close **removes the trigger from the DOM**, **`returnFocusRef`** alone is not enough—move focus
+after the UI updates (for example with **`useLayoutEffect`**). See [Return Focus](#return-focus).
+
+**Custom targets** _(conditional)_: Apply when using a custom **`as`** component on
+**`Modal.Target`**. **`Modal.Target`** adds **`onClick`** and **`ref`**. Custom targets must forward
+both to a **keyboard-focusable** element (prefer a native **`<button>`** or
+**`as={SecondaryButton}`** / another Canvas Kit button). Wrap the component in
+**`React.forwardRef`** when it does not forward refs by default (required if the modal can open
+programmatically before the user clicks the target).
+
+| Requirement                                                   | How to satisfy                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accessible dialog name                                        | Use **`Modal.Heading`** so `aria-labelledby` on `Modal.Card` references a visible title. Do not omit the heading: **`Modal.Card` always sets `aria-labelledby`**, and an `aria-label` fallback is unreliable when that ID does not exist.                                                                                                                                     |
+| Dismiss control                                               | Provide a way to close the modal: **`Modal.CloseButton`** with visible text (no extra **`aria-label`** needed), and/or **`Modal.CloseIcon`** for icon-only dismiss (requires **`Tooltip`** or translated **`aria-label`**).                                                                                                                                                                              |
+| Keyboard-operable trigger                                     | See **Custom targets** above.                                                                                                                                                                                                                                                                                                                                                                            |
+| Supplementary copy when overriding open focus _(conditional)_ | When **`initialFocusRef`** places open focus **below** **`Modal.Heading`**, assign a unique `id` to supplementary text and pass **`aria-describedby`** on **`Modal.Card`**. See **Open focus below the heading** below, [Custom Focus](#custom-focus), and [Popup > Initial Focus](https://workday.github.io/canvas-kit/?path=/docs/components-popups-popup--docs#initial-focus) (button-focus variant). |
+| Keyboard-scrollable overflowing body _(conditional)_          | When **`Modal.Body`** content overflows, set **`tabIndex={0}`** on **`Modal.Body`** so keyboard users can focus the scroll region and use arrow keys. See [Body Content Overflow](#body-content-overflow).                                                                                                                                                                                               |
+| Accept-only / no Escape dismiss _(conditional)_               | Only when the design requires the user to accept (not dismiss via Escape or overlay click): compose a custom **`usePopupModel`** with the modal behaviors you still need, **omitting** **`useCloseOnEscape`** and **`useCloseOnOverlayClick`**. See [Without Close Icon](#without-close-icon).                                                                                                           |
+
+**Open focus below the heading** _(conditional; see supplementary copy row above)_:
+
+When open focus moves past the heading (for example into a form field), wire **`aria-describedby`**
+so assistive technology still announces the supplementary copy. For focusing a primary action
+instead of an input, see
+[Popup > Initial Focus](https://workday.github.io/canvas-kit/?path=/docs/components-popups-popup--docs#initial-focus).
+
+```tsx
+import React from 'react';
+
+import {useUniqueId} from '@workday/canvas-kit-react/common';
+import {FormField} from '@workday/canvas-kit-react/form-field';
+import {Modal, useModalModel} from '@workday/canvas-kit-react/modal';
+import {TextInput} from '@workday/canvas-kit-react/text-input';
+
+const Example = () => {
+  const descriptionId = useUniqueId();
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const model = useModalModel({initialFocusRef: inputRef});
+
+  return (
+    <Modal model={model}>
+      <Modal.Target>Open</Modal.Target>
+      <Modal.Overlay>
+        <Modal.Card aria-describedby={descriptionId}>
+          <Modal.CloseIcon aria-label="Close" />
+          <Modal.Heading>Title</Modal.Heading>
+          <Modal.Body>
+            <p id={descriptionId}>Enter your email to continue.</p>
+            <FormField>
+              <FormField.Label>Email</FormField.Label>
+              <FormField.Input as={TextInput} ref={inputRef} />
+            </FormField>
+          </Modal.Body>
+          <Modal.CloseButton>Cancel</Modal.CloseButton>
+        </Modal.Card>
+      </Modal.Overlay>
+    </Modal>
+  );
+};
+```
+
+**Summary for code generation:**
+
+- **REQUIRED:** accessible name, dismiss control, keyboard-operable trigger,
+  **`Modal.Overlay` → `Modal.Card`** composition
+- **CONDITIONAL:** **`initialFocusRef`**, **`returnFocusRef`**, **`aria-describedby`**,
+  **`forwardRef`** on custom **`Modal.Target`**, **`tabIndex={0}`** on overflowing **`Modal.Body`**,
+  custom model omitting Escape/overlay dismiss, **`Modal.OverflowOverlay`**
+
+### Anti-Patterns
+
+Do **not** generate code that does the following (see **Accessibility Requirements** above for what
+to supply instead):
+
+- Manually set `role="dialog"`, `aria-labelledby`, or dialog `id` on **`Modal.Card`** or
+  **`Modal.Heading`** — Canvas Kit hooks wire these
+- Override **`aria-modal`** to **`"true"`** on **`Modal.Card`** — when **`aria-modal`** is `true`,
+  some assistive technologies hide everything outside the dialog, including portaled UI owned by the
+  modal (such as a Select menu rendered as a sibling). Canvas Kit sets **`aria-modal="false"`** for
+  a better VoiceOver experience while **`useAssistiveHideSiblings`** applies **`aria-hidden`** to
+  background siblings. Do not change this unless accessibility has approved it. Unlike
+  [**Dialog**](https://workday.github.io/canvas-kit/?path=/docs/components-popups-dialog--docs),
+  Modal also does **not** use the sibling **`aria-owns`** reading-order pattern
+- Omit **`Modal.Overlay`** (or **`Modal.OverflowOverlay`**), render **`Modal.Card`** outside it, or
+  add a custom portal/restructure instead of **`Modal` → `Modal.Overlay` → `Modal.Card`**
+- Use **`open`** / **`onClose`** props on **`Modal`** — Modal has no controlled visibility props;
+  use **`useModalModel`** and **`model.events.show()`** / **`model.events.hide()`**
+- Use **Dialog** when the task must block the rest of the page, or add **`useFocusRedirect`** /
+  **`aria-owns`** expecting Modal-like blocking behavior — Modal uses a focus trap and sibling
+  hiding instead
+- Set **`initialFocusRef`** or **`returnFocusRef`** by default — state the default focus behavior
+  first and ask the developer before overriding (see **Focus management** in Accessibility
+  Requirements)
+- Add **`aria-expanded`** or **`aria-haspopup`** on **`Modal.Target`** — those attributes apply to
+  **non-modal** dialogs (see
+  [**Dialog**](https://workday.github.io/canvas-kit/?path=/docs/components-popups-dialog--docs) /
+  [**Popup**](https://workday.github.io/canvas-kit/?path=/docs/components-popups-popup--docs)); Modal
+  moves focus into the dialog on open and must not use this pattern
+- Use a custom **`Modal.Target`** **`as`** component that does not forward **`ref`** to a focusable
+  element — use **`React.forwardRef`** or a Canvas Kit button component instead
+- Rely on **`returnFocusRef`** alone when close **removes the trigger from the DOM** (see
+  [Return Focus](#return-focus))
+- Omit Escape and overlay dismiss without an explicit accept-only design requirement, or remove
+  **`Modal.CloseIcon`** without providing another dismiss path (see **Accept-only / no Escape
+  dismiss**)
+- Leave overflowing **`Modal.Body`** content without a keyboard path to scroll (see
+  **Keyboard-scrollable overflowing body**)
+- Nest multiple **`Modal`** instances without deliberate initial focus and return-focus planning
+- Assume the focus trap alone fully hides outside content from every assistive technology — verify
+  supported browser and screen reader combinations
+
 ## Component API
 
 <SymbolDoc name="Modal" fileName="/react/" />
 
 ## Specifications
 
-<Specifications file="Modal.spec.ts" name="Modal" />
+<Specifications file="./cypress/component/Modal.spec.tsx" name="Modal" />

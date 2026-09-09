@@ -1,31 +1,30 @@
 import * as React from 'react';
 
-import {checkSmallIcon} from '@workday/canvas-system-icons-web';
-
-import {
-  createSubcomponent,
-  composeHooks,
-  createElemPropsHook,
-  createComponent,
-} from '@workday/canvas-kit-react/common';
-import {SystemIcon} from '@workday/canvas-kit-react/icon';
-import {OverflowTooltip} from '@workday/canvas-kit-react/tooltip';
-import {mergeStyles} from '@workday/canvas-kit-react/layout';
 import {
   isSelected,
   useListItemActiveDescendant,
   useListItemRegister,
 } from '@workday/canvas-kit-react/collection';
+import {
+  composeHooks,
+  createComponent,
+  createElemPropsHook,
+  createSubcomponent,
+} from '@workday/canvas-kit-react/common';
+import {SystemIcon} from '@workday/canvas-kit-react/icon';
+import {mergeStyles} from '@workday/canvas-kit-react/layout';
+import {OverflowTooltip} from '@workday/canvas-kit-react/tooltip';
+import {checkIcon} from '@workday/canvas-system-icons-web';
 
+import {MenuItem, MenuItemProps, menuItemStencil} from './MenuItem';
 import {useMenuModel} from './useMenuModel';
-import {menuItemStencil, MenuItem, MenuItemProps} from './MenuItem';
 
 const MenuOptionText = createComponent('span')({
   Component: ({...elemProps}, ref, Element) => {
     return (
       <>
         <MenuItem.Text ref={ref} as={Element} {...elemProps} />
-        <SystemIcon {...menuItemStencil.parts.selected} icon={checkSmallIcon} />
+        <SystemIcon size="md" {...menuItemStencil.parts.selected} icon={checkIcon} />
       </>
     );
   },
@@ -52,6 +51,9 @@ export const useMenuOption = composeHooks(
       // Only left mouse button
       if (event.button === 0) {
         if (event.currentTarget.getAttribute('aria-disabled') !== 'true') {
+          // Keep the list cursor in sync with pointer selection so dependent UI (for example
+          // `aria-activedescendant` and scroll-into-view in combobox) targets the clicked option.
+          model.events.goTo({id});
           model.events.select({id});
 
           if (model.state.mode === 'single') {

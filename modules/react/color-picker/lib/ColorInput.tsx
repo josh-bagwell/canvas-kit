@@ -1,15 +1,17 @@
 import * as React from 'react';
+
 import {
+  ErrorType,
+  GrowthBehavior,
   createComponent,
   expandHex,
-  GrowthBehavior,
-  ErrorType,
 } from '@workday/canvas-kit-react/common';
+import {Subtext} from '@workday/canvas-kit-react/text';
 import {TextInput, TextInputProps} from '@workday/canvas-kit-react/text-input';
-import {ColorSwatch} from './parts/ColorSwatch';
 import {calc, createStencil, handleCsProp, px2rem} from '@workday/canvas-kit-styling';
 import {system} from '@workday/canvas-tokens-web';
-import {Subtext} from '@workday/canvas-kit-react/text';
+
+import {ColorSwatch} from './parts/ColorSwatch';
 
 export interface ColorInputProps extends TextInputProps, GrowthBehavior {
   /**
@@ -81,9 +83,12 @@ export const colorPickerHexInputStencil = createStencil({
     [swatchPart]: {
       position: 'absolute',
       top: px2rem(10),
-      left: system.space.x2,
+      left: system.legacy.gap.sm,
       boxShadow: `inset 0 0 0 ${px2rem(1)} rgba(0,0,0,0.25)`,
       pointerEvents: 'none',
+      '@media (forced-colors: active)': {
+        outline: `solid ${px2rem(1)} SelectedItemText`,
+      },
     },
 
     ':dir(ltr)': {
@@ -102,14 +107,9 @@ export const colorPickerHexInputStencil = createStencil({
       }),
     },
     disabled: {
-      true: ({inputPart, poundSignPart}) => ({
-        [inputPart]: {
-          borderColor: system.color.border.input.disabled,
-          backgroundColor: system.color.bg.alt.soft,
-          color: system.color.text.disabled,
-        },
+      true: ({poundSignPart}) => ({
         [poundSignPart]: {
-          color: system.color.text.disabled,
+          opacity: system.opacity.disabled,
         },
       }),
     },

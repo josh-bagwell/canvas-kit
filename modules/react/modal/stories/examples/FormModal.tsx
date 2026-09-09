@@ -1,11 +1,13 @@
 import React from 'react';
 
-import {Modal, useModalModel} from '@workday/canvas-kit-react/modal';
 import {PrimaryButton} from '@workday/canvas-kit-react/button';
-import {Flex} from '@workday/canvas-kit-react/layout';
 import {FormField} from '@workday/canvas-kit-react/form-field';
+import {Modal, useModalModel} from '@workday/canvas-kit-react/modal';
+import {Select} from '@workday/canvas-kit-react/select';
 import {TextInput} from '@workday/canvas-kit-react/text-input';
 import {plusIcon} from '@workday/canvas-system-icons-web';
+
+const FAVORITE_COLOR_OPTIONS = ['Blue', 'Yellow'];
 
 export const FormModal = () => {
   const model = useModalModel();
@@ -18,6 +20,8 @@ export const FormModal = () => {
     console.log('form data', {
       first: (event.currentTarget.elements.namedItem('first') as HTMLInputElement).value,
       last: (event.currentTarget.elements.namedItem('last') as HTMLInputElement).value,
+      favoriteColor: (event.currentTarget.elements.namedItem('favoriteColor') as HTMLInputElement)
+        .value,
     });
 
     // if it looks good, submit to the server and close the modal
@@ -32,19 +36,32 @@ export const FormModal = () => {
           <Modal.CloseIcon aria-label="Close" />
           <Modal.Heading>New User</Modal.Heading>
           <Modal.Body>
-            <FormField>
+            <FormField grow>
               <FormField.Label>First Name</FormField.Label>
               <FormField.Input as={TextInput} name="first" />
             </FormField>
-            <FormField>
+            <FormField grow>
               <FormField.Label>Last Name</FormField.Label>
               <FormField.Input as={TextInput} name="last" />
             </FormField>
+            <FormField grow>
+              <FormField.Label>Favorite Color</FormField.Label>
+              <FormField.Field>
+                <Select items={FAVORITE_COLOR_OPTIONS}>
+                  <FormField.Input as={Select.Input} name="favoriteColor" />
+                  <Select.Popper>
+                    <Select.Card>
+                      <Select.List>{item => <Select.Item>{item}</Select.Item>}</Select.List>
+                    </Select.Card>
+                  </Select.Popper>
+                </Select>
+              </FormField.Field>
+            </FormField>
           </Modal.Body>
-          <Flex gap="s" padding="xxs">
+          <Modal.ButtonGroup>
             <Modal.CloseButton>Cancel</Modal.CloseButton>
             <PrimaryButton type="submit">Submit</PrimaryButton>
-          </Flex>
+          </Modal.ButtonGroup>
         </Modal.Card>
       </Modal.Overlay>
     </Modal>

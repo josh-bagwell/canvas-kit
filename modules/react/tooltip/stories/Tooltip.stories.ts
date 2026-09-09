@@ -1,18 +1,19 @@
 import {Meta, StoryObj} from '@storybook/react';
 
-import mdxDoc from './Tooltip.mdx';
-
 import {Tooltip} from '@workday/canvas-kit-react/tooltip';
 
-import {Default as DefaultExample} from './examples/Default';
+import mdxDoc from './Tooltip.mdx';
+import {AIDisclosure as AIDisclosureExample} from './examples/AIDisclosure';
+import {Alt as AltExample} from './examples/Alt';
 import {CustomContent as CustomContentExample} from './examples/CustomContent';
+import {Default as DefaultExample} from './examples/Default';
 import {DelayedTooltip as DelayedTooltipExample} from './examples/DelayedTooltip';
-import {DescriptionType as DescriptionTypeExample} from './examples/DescriptionType';
 import {DescribeType as DescribeTypeExample} from './examples/DescribeType';
-import {Muted as MutedExample} from './examples/Muted';
-import {Placements as PlacementsExample} from './examples/Placements';
+import {DescriptionType as DescriptionTypeExample} from './examples/DescriptionType';
 import {Ellipsis as EllipsisExample} from './examples/Ellipsis';
 import {LineClamp as LineClampExample} from './examples/LineClamp';
+import {Muted as MutedExample} from './examples/Muted';
+import {Placements as PlacementsExample} from './examples/Placements';
 import {UseTooltip as UseTooltipExample} from './examples/UseTooltip';
 
 export default {
@@ -34,6 +35,9 @@ export const Default: Story = {
 export const CustomContent: Story = {
   render: CustomContentExample,
 };
+export const AIDisclosure: Story = {
+  render: AIDisclosureExample,
+};
 export const DelayedTooltip: Story = {
   render: DelayedTooltipExample,
 };
@@ -45,6 +49,9 @@ export const DescribeType: Story = {
 };
 export const Muted: Story = {
   render: MutedExample,
+};
+export const Alt: Story = {
+  render: AltExample,
 };
 export const Placements: Story = {
   render: PlacementsExample,

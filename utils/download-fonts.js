@@ -1,7 +1,9 @@
-/* eslint-disable compat/compat */
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import https from 'node:https';
+import {dirname, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const fontBaseUrl = 'https://design.workdaycdn.com/beta/assets/fonts@1.0.0/roboto/ttf/';
 const fontsToDownload = [
@@ -11,6 +13,12 @@ const fontsToDownload = [
   'Roboto-Bold.ttf',
   'RobotoMono-Regular.ttf',
 ];
+
+const sanaFontBaseUrl = 'https://design.workdaycdn.com/assets/fonts/Sana-Sans/';
+const sanaFontsToDownload = ['SanaSansLCG05-Variable.ttf'];
+
+const ibmPlexMonoBaseUrl = 'https://design.workdaycdn.com/assets/fonts/IBM-Plex-Mono/';
+const ibmPlexMonoFontsToDownload = ['IBMPlexMono-Regular.woff2'];
 
 async function download(url, filePath) {
   return new Promise((resolve, reject) => {
@@ -49,12 +57,35 @@ async function download(url, filePath) {
 
 async function main() {
   // Download all webfonts locally to avoid CDN and font-loading issues
-  if (!fs.existsSync(path.resolve(__dirname, '../public'))) {
-    fs.mkdirSync(path.resolve(__dirname, '../public'));
+  if (!fs.existsSync(resolve(__dirname, '../public'))) {
+    fs.mkdirSync(resolve(__dirname, '../public'));
   }
+
+  // Serve type CSS from public/ so Storybook head <link> tags work without bundler resolution
+  fs.copyFileSync(
+    resolve(__dirname, '../.storybook/updated-type.css'),
+    resolve(__dirname, '../public/updated-type.css')
+  );
+
+  // Serve the theme-setting script from public/ so Storybook head <script> tags work without bundler resolution
+  fs.copyFileSync(
+    resolve(__dirname, '../.storybook/set-data-theme.js'),
+    resolve(__dirname, '../public/set-data-theme.js')
+  );
+
   await Promise.all(
     fontsToDownload.map(fileName => {
-      download(fontBaseUrl + fileName, path.resolve(__dirname, '../public', fileName));
+      return download(fontBaseUrl + fileName, resolve(__dirname, '../public', fileName));
+    })
+  );
+  await Promise.all(
+    sanaFontsToDownload.map(fileName => {
+      return download(sanaFontBaseUrl + fileName, resolve(__dirname, '../public', fileName));
+    })
+  );
+  await Promise.all(
+    ibmPlexMonoFontsToDownload.map(fileName => {
+      return download(ibmPlexMonoBaseUrl + fileName, resolve(__dirname, '../public', fileName));
     })
   );
 }

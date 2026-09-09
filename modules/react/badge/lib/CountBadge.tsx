@@ -1,5 +1,5 @@
 import {createComponent} from '@workday/canvas-kit-react/common';
-import {handleCsProp, CSProps, createStencil, px2rem, keyframes} from '@workday/canvas-kit-styling';
+import {CSProps, createStencil, handleCsProp, keyframes, px2rem} from '@workday/canvas-kit-styling';
 import {system} from '@workday/canvas-tokens-web';
 
 const grow = keyframes({
@@ -42,32 +42,30 @@ const countBadgeStencil = createStencil({
   base: {
     alignItems: 'center',
     animation: `${grow} 0.2s ease`,
-    borderRadius: system.shape.round,
+    borderRadius: system.legacy.shape.full,
     display: 'inline-flex',
-    fontFamily: system.fontFamily.default,
-    fontSize: system.fontSize.subtext.medium,
-    fontWeight: system.fontWeight.bold,
+    ...system.legacy.type.subtext.md,
+    fontWeight: system.fontWeight.medium,
     height: px2rem(20),
     justifyContent: 'center',
-    lineHeight: px2rem(20),
-    minWidth: px2rem(20),
-    padding: `0 ${px2rem(6.5)}`,
-    background: system.color.fg.critical.default,
-    color: system.color.text.inverse,
+    minWidth: system.legacy.size.xxs,
+    padding: `0 ${system.legacy.padding.xxs}`,
+    background: system.legacy.color.brand.accent.primary,
+    color: system.color.fg.inverse,
   },
   modifiers: {
     variant: {
       // .cnvs-count-badge--variant-inverse
       inverse: {
-        background: system.color.bg.default,
-        color: system.color.text.primary.default,
+        background: system.legacy.color.surface.inverse,
+        color: system.color.fg.strong,
       },
     },
     emphasis: {
       high: {},
       low: {
-        background: system.color.bg.info.softer,
-        color: system.color.fg.info.stronger,
+        background: system.legacy.color.surface.info.strong,
+        color: system.legacy.color.fg.info.strong,
       },
     },
   },
@@ -75,7 +73,7 @@ const countBadgeStencil = createStencil({
     {
       modifiers: {variant: 'inverse', emphasis: 'low'},
       styles: {
-        background: system.color.bg.transparent.strong,
+        background: system.legacy.color.surface.overlay.hover.inverse,
         color: system.color.fg.inverse,
       },
     },

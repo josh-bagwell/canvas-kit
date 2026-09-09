@@ -1,8 +1,7 @@
-import {createComponent, ExtractProps} from '@workday/canvas-kit-react/common';
-import {Popup} from '@workday/canvas-kit-react/popup';
+import {ExtractProps, createComponent} from '@workday/canvas-kit-react/common';
 import {Flex, mergeStyles} from '@workday/canvas-kit-react/layout';
+import {Popup} from '@workday/canvas-kit-react/popup';
 import {createStencil} from '@workday/canvas-kit-styling';
-import {system} from '@workday/canvas-tokens-web';
 
 export interface ToastBodyProps extends ExtractProps<typeof Popup.Body> {}
 
@@ -11,10 +10,8 @@ export const toastBodyStencil = createStencil({
     alignItems: 'flex-start',
     flexDirection: 'column',
     justifyContent: 'center',
-    paddingTop: system.space.x4,
-    paddingBottom: system.space.x4,
     flexGrow: 1,
-    gap: system.space.x1,
+    gap: 0,
   },
 });
 

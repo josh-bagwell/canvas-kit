@@ -1,19 +1,24 @@
-import {ExampleCodeBlock, SymbolDoc, Specifications} from '@workday/canvas-kit-docs';
-import {InformationHighlight} from '@workday/canvas-kit-preview-react/information-highlight';
+import {Meta} from '@storybook/blocks';
+
+import {ExampleCodeBlock, Specifications, SymbolDoc} from '@workday/canvas-kit-docs';
+import {InformationHighlight} from '@workday/canvas-kit-react/information-highlight';
 import {StatusIndicator} from '@workday/canvas-kit-preview-react/status-indicator';
-import * as TooltipStories from './Tooltip.stories';
-import {Default} from './examples/Default';
+
+import TooltipStoriesMeta from './Tooltip.stories';
+import {AIDisclosure} from './examples/AIDisclosure';
 import {CustomContent} from './examples/CustomContent';
+import {Default} from './examples/Default';
 import {DelayedTooltip} from './examples/DelayedTooltip';
-import {DescriptionType} from './examples/DescriptionType';
 import {DescribeType} from './examples/DescribeType';
-import {Muted} from './examples/Muted';
-import {Placements} from './examples/Placements';
+import {DescriptionType} from './examples/DescriptionType';
 import {Ellipsis} from './examples/Ellipsis';
 import {LineClamp} from './examples/LineClamp';
+import {Muted} from './examples/Muted';
+import {Placements} from './examples/Placements';
 import {UseTooltip} from './examples/UseTooltip';
+import {Alt} from './examples/Alt';
 
-<Meta of={TooltipStories} />
+<Meta of={TooltipStoriesMeta} />
 
 # Canvas Kit React Tooltips
 
@@ -22,7 +27,7 @@ used to label or describe an element. By default, a tooltip will label an elemen
 for buttons with icons. A tooltip can also be used to describe additional information about an
 element
 
-[> Workday Design Reference](https://design.workday.com/components/popups/tooltips)
+[Workday Design Reference](https://design.workday.com/components/popups/tooltips)
 
 ## Installation
 
@@ -66,13 +71,34 @@ and focus events.
 
 <ExampleCodeBlock code={Default} />
 
+### Alt Example
+
+The `alt` variant is designed for use on alternative page backgrounds (`system.color.bg.alt.default`). Use this variant to maintain proper visual hierarchy when placing components on colored backgrounds. While the default variant should be used on `system.color.bg.default` backgrounds, the `alt` variant ensures the component remains visually elevated on `system.color.bg.alt.default` backgrounds.
+
+<ExampleCodeBlock code={Alt} />
+
 ### Describing an Element
 
-<InformationHighlight variant={'caution'} className='sb-unstyled'>
+<InformationHighlight variant={'caution'} className="sb-unstyled">
   <InformationHighlight.Icon />
-  <InformationHighlight.Heading> Caution: Describe type has been deprecated </InformationHighlight.Heading>
-  <InformationHighlight.Body>
-     Assistive technology may ignore <StatusIndicator variant='gray'><StatusIndicator.Label cs={{textTransform: 'lowercase'}}>type="describe"</StatusIndicator.Label></StatusIndicator> techniques based on verbosity settings. Please use <StatusIndicator cs={{textTransform: 'lowercase'}} variant='gray'><StatusIndicator.Label cs={{textTransform: 'lowercase'}}>type="description"</StatusIndicator.Label></StatusIndicator> on Tooltips.
+  <InformationHighlight.Heading>
+    {' '}
+    Caution: Describe type has been deprecated{' '}
+  </InformationHighlight.Heading>
+  <InformationHighlight.Body cs={{'p': {display: 'inline-block'}}}>
+    Assistive technology may ignore{' '}
+    <StatusIndicator variant="gray">
+      <StatusIndicator.Label cs={{textTransform: 'lowercase'}}>
+        type="describe"
+      </StatusIndicator.Label>
+    </StatusIndicator>{' '}
+    techniques based on verbosity settings. Please use{' '}
+    <StatusIndicator cs={{textTransform: 'lowercase'}} variant="gray">
+      <StatusIndicator.Label cs={{textTransform: 'lowercase'}}>
+        type="description"
+      </StatusIndicator.Label>
+    </StatusIndicator>{' '}
+    on Tooltips.
   </InformationHighlight.Body>
 </InformationHighlight>
 
@@ -88,9 +114,10 @@ being focused and the ancillary tooltip information.
 The default mode for a tooltip is to assign a name to the target element with an `aria-label`
 string. If a tooltip is meant to provide ancillary information, the `type` can be set to `description`.
 This will add `aria-description` strings to the target element instead. This variant is useful on
-text buttons and other components that already have a label or name. Use this type instead of `describe` to ensure proper aria attributes are added to the dom regardless if the tooltip is visible. 
+text buttons and other components that already have a label or name. Use this type instead of `describe` to ensure proper aria attributes are added to the dom regardless if the tooltip is visible.
 
-> **Note:** If you use `description` type and want to pass `jsx`, it **must* be inline and **not** a component to ensure the inner text is properly read by voiceover.
+> **Note:** If you use `description` type and want to pass `jsx`, it **must\* be inline and
+> **not\*\* a component to ensure the inner text is properly read by voiceover.
 >
 > ```jsx
 > // The text will be understood as: You must accept terms and conditions
@@ -99,6 +126,7 @@ text buttons and other components that already have a label or name. Use this ty
 > // This will render a string including the html and will not be properly understood by voice over.
 > const MyComponent = () => <span>You<i>must</i> accept terms and conditions</span>
 > <Tool
+> ```
 
 <ExampleCodeBlock code={DescriptionType} />
 
@@ -118,6 +146,15 @@ content or a focusable element is needed by your UI, a tooltip is not a good cho
 a dialog instead.
 
 <ExampleCodeBlock code={CustomContent} />
+
+### AI Disclosure
+
+Use a tooltip to disclose when content or functionality is powered by AI. Pair an icon button with a
+tooltip near the content it describes so users understand how it was produced before they act on it.
+The tooltip labels the button, making the disclosure available to both sighted and screen reader
+users.
+
+<ExampleCodeBlock code={AIDisclosure} />
 
 ### Delayed Tooltip
 
@@ -213,4 +250,4 @@ example uses those parts directly while being functionally equivalent to the ori
 
 ## Specifications
 
-<Specifications file="Tooltip.spec.ts" name="Tooltip" />
+<Specifications file="./cypress/component/Tooltip.spec.tsx" name="Tooltip" />

@@ -1,16 +1,18 @@
 import {createRoot} from 'react-dom/client';
-import {fonts} from '@workday/canvas-kit-react-fonts';
-import {system} from '@workday/canvas-tokens-web';
-import {injectGlobal} from '@workday/canvas-kit-styling';
-import {App} from './App';
 
+import {fonts} from '@workday/canvas-kit-react-fonts';
+import {injectGlobal} from '@workday/canvas-kit-styling';
+import {system} from '@workday/canvas-tokens-web';
 import '@workday/canvas-tokens-web/css/base/_variables.css';
 import '@workday/canvas-tokens-web/css/brand/_variables.css';
+import '@workday/canvas-tokens-web/css/component/_variables.css';
 import '@workday/canvas-tokens-web/css/system/_variables.css';
 
-//@ts-ignore
+import {App} from './App';
+
+injectGlobal(...fonts);
+// @ts-expect-error - token CSS variable strings aren't assignable to csstype's strict property types
 injectGlobal({
-  ...fonts,
   'html, body': {
     fontFamily: system.fontFamily.default,
     margin: 0,
@@ -18,7 +20,7 @@ injectGlobal({
   },
   '#root, #root < div': {
     minHeight: '100vh',
-    ...system.type.body.small,
+    ...system.type.body.sm,
   },
 });
 

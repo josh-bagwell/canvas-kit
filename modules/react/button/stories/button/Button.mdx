@@ -1,24 +1,27 @@
+import {Meta} from '@storybook/blocks';
+
 import {
   ExampleCodeBlock,
   Specifications,
-  SymbolDoc,
   SymbolDescription,
+  SymbolDoc,
 } from '@workday/canvas-kit-docs';
 
+import {CustomStyles} from './examples/CustomStyles';
+import {Delete} from './examples/Delete';
+import {DeleteOutline} from './examples/DeleteOutline';
+import {Grow} from './examples/Grow';
 import {Primary} from './examples/Primary';
 import {PrimaryInverse} from './examples/PrimaryInverse';
 import {Secondary} from './examples/Secondary';
 import {SecondaryInverse} from './examples/SecondaryInverse';
 import {Tertiary} from './examples/Tertiary';
 import {TertiaryInverse} from './examples/TertiaryInverse';
-import {Delete} from './examples/Delete';
-import {Grow} from './examples/Grow';
-import {CustomStyles} from './examples/CustomStyles';
 import {ThemeOverrides} from './examples/ThemeOverrides';
 
-import * as ButtonStories from './Button.stories';
+import ButtonStoriesMeta from './Button.stories';
 
-<Meta of={ButtonStories} />
+<Meta of={ButtonStoriesMeta} />
 
 # Canvas Kit Button
 
@@ -44,7 +47,7 @@ The example below shows multiple instances of a `PrimaryButton` with various ico
 
 Primary Buttons also have an `inverse` variant. While it looks similar to the default Secondary
 Button, the default outline as well as the hover and focus states are different. Use this variant
-when you need to place a Primary Button on a dark or colorful background such as `blueberry400`.
+when you need to place a Primary Button on a dark or colorful background such as `neutral400`.
 
 <ExampleCodeBlock code={PrimaryInverse} />
 
@@ -57,7 +60,7 @@ The example below shows multiple instances of a `SecondaryButton` with various i
 <ExampleCodeBlock code={Secondary} />
 
 Secondary Buttons also have an `inverse` variant. Use this when you need to place a Secondary Button
-on a dark or colorful background such as `blueberry400`.
+on a dark or colorful background such as `neutral400`.
 
 <ExampleCodeBlock code={SecondaryInverse} />
 
@@ -70,7 +73,7 @@ The example below shows multiple instances of a `TertiaryButton` with various ic
 <ExampleCodeBlock code={Tertiary} />
 
 Tertiary Buttons also have an `inverse` variant. Use this when you need to place a Tertiary Button
-on a dark or colorful background such as `blueberry400`.
+on a dark or colorful background such as `neutral400`.
 
 <ExampleCodeBlock code={TertiaryInverse} />
 
@@ -79,6 +82,10 @@ on a dark or colorful background such as `blueberry400`.
 <SymbolDescription name="DeleteButton" fileName="/react/" />
 
 <ExampleCodeBlock code={Delete} />
+
+Delete Buttons also have an `outline` variant.
+
+<ExampleCodeBlock code={DeleteOutline} />
 
 ### Grow Prop
 
@@ -118,13 +125,13 @@ Enter and Space keys for keyboard interactions.
 [Button Pattern | APG | WAI | W3C](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
 
 - An `aria-label` is only necessary for icon-only buttons in most cases. Using
-  [Canvas Kit's tooltip component](?path=/docs/components-popups-tooltip--docs) will handle this for
-  you, and all users will be able to see the label for the button.
+  [Canvas Kit's tooltip component](/components/popups/tooltip/) will handle this for you, and all
+  users will be able to see the label for the button.
 - When button designs have 2 toggle states, an `aria-pressed={true | false}` property is required
   for screen reader support. For example, see Canvas Kit's
-  [Segmented Control component](?path=/docs/preview-segmented-control--docs).
-- When buttons have an attached menu, an `aria-haspopup=”true”` property is required. Using
-  [Canvas Kit's Menu component](?path=/docs/components-menus-menu--docs) will handle this for you.
+  [Segmented Control component](/components/buttons/segmented-control/).
+- When buttons have an attached menu, an `aria-haspopup="true"` property is required. Using
+  [Canvas Kit's Menu component](/components/popups/menu/) will handle this for you.
 - The icons used in text buttons are decorative in most cases and include ARIA `role="presentation"`
   and `focusable="false"`. In some special cases where an icon does add meaning, you may be required
   to change the `role` and add an `aria-label` to the icon for equivalent screen reader support.
@@ -139,8 +146,7 @@ Enter and Space keys for keyboard interactions.
 - Button text content is announced along with the button role (e.g., "Primary, button").
 - Icon-only buttons announce the `aria-label` value along with the button role.
 - Toggle buttons announce their pressed/unpressed state (e.g., "Activity Stream, toggle button,
-  pressed" and check out the
-  [Segmented Control component](?path=/docs/preview-segmented-control--docs)).
+  pressed" and check out the [Segmented Control component](/components/buttons/segmented-control/)).
 
 ### Touch Target Size
 
@@ -163,4 +169,4 @@ Enter and Space keys for keyboard interactions.
 
 ## Specifications
 
-<Specifications file="Button.spec.tsx" name="Button" />
+<Specifications file="./cypress/component/Button.spec.tsx" name="Button" />

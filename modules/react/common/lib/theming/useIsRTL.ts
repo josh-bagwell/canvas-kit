@@ -1,6 +1,7 @@
-import * as React from 'react';
 import {ThemeContext} from '@emotion/react';
-import {EmotionCanvasTheme, ContentDirection, PartialEmotionCanvasTheme} from './types';
+import * as React from 'react';
+
+import {ContentDirection, EmotionCanvasTheme, PartialEmotionCanvasTheme} from './types';
 
 function useDefaultTheme<T, C>(theme: T | undefined, config: C, fn: (config: C) => T) {
   return theme || fn(config);
@@ -14,7 +15,7 @@ function useDefaultTheme<T, C>(theme: T | undefined, config: C, fn: (config: C) 
  * const isRTL = useIsRTL();
  * ```
  *
- * @deprecated Use isElementRTL instead.
+ * @deprecated ⚠️ `useIsRTL` is deprecated and will be removed in a future major version. Please use `isElementRTL` instead.
  */
 
 export const useIsRTL = (partialTheme?: PartialEmotionCanvasTheme) => {

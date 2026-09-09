@@ -1,15 +1,22 @@
 import React from 'react';
+import {FieldErrorsImpl, useForm} from 'react-hook-form';
+import {SchemaOf, object, string} from 'yup';
 
-import {useForm, FieldErrorsImpl} from 'react-hook-form';
-import {object, SchemaOf, string} from 'yup';
-
-import {TextInput} from '@workday/canvas-kit-react/text-input';
-import {Flex} from '@workday/canvas-kit-react/layout';
-import {TertiaryButton, PrimaryButton} from '@workday/canvas-kit-react/button';
-import {Select} from '@workday/canvas-kit-react/select';
-import {FormField} from '@workday/canvas-kit-react/form-field';
-import {visibleIcon, invisibleIcon} from '@workday/canvas-system-icons-web';
+import {PrimaryButton, TertiaryButton} from '@workday/canvas-kit-react/button';
 import {useUniqueId} from '@workday/canvas-kit-react/common';
+import {FormField} from '@workday/canvas-kit-react/form-field';
+import {Flex} from '@workday/canvas-kit-react/layout';
+import {Select} from '@workday/canvas-kit-react/select';
+import {TextInput} from '@workday/canvas-kit-react/text-input';
+import {createStyles, px2rem} from '@workday/canvas-kit-styling';
+import {visibleIcon, visibleStrikethroughIcon} from '@workday/canvas-system-icons-web';
+import {system} from '@workday/canvas-tokens-web';
+
+const styles = createStyles({
+  gap: system.gap.md,
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+});
 
 type YupValidationResolver = <T extends {}>(
   validationSchema: SchemaOf<T>
@@ -99,7 +106,7 @@ export const TextInputWithReactHookForm = () => {
   };
   return (
     <form onSubmit={onSubmit} action="." noValidate={true}>
-      <Flex gap="xs" flexDirection="column" alignItems="flex-start">
+      <Flex cs={styles}>
         <FormField
           orientation="vertical"
           isRequired={true}
@@ -107,7 +114,7 @@ export const TextInputWithReactHookForm = () => {
         >
           <Select items={options} getTextValue={item => item.label}>
             <FormField.Label>What is your role?</FormField.Label>
-            <FormField.Input as={Select.Input} {...register('role')} width="280px" />
+            <FormField.Input as={Select.Input} {...register('role')} cs={{width: px2rem(280)}} />
             <Select.Popper>
               <Select.Card>
                 <Select.List maxHeight={200}>
@@ -143,7 +150,7 @@ export const TextInputWithReactHookForm = () => {
           error={!!errors.password ? 'error' : undefined}
         >
           <FormField.Label>Password</FormField.Label>
-          <Flex gap="xxs">
+          <Flex cs={{gap: system.gap.md}}>
             <FormField.Field>
               <FormField.Input
                 as={TextInput}
@@ -156,7 +163,7 @@ export const TextInputWithReactHookForm = () => {
             </FormField.Field>
             <TertiaryButton
               type="button"
-              icon={showPassword ? invisibleIcon : visibleIcon}
+              icon={showPassword ? visibleStrikethroughIcon : visibleIcon}
               aria-label={showPassword ? 'Hide Password' : 'Show Password'}
               aria-controls={`input-${passwordId}`}
               onClick={() => {

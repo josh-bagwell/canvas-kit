@@ -1,9 +1,10 @@
 import {
+  ExtractProps,
   createElemPropsHook,
   createSubcomponent,
-  ExtractProps,
 } from '@workday/canvas-kit-react/common';
 import {Menu} from '@workday/canvas-kit-react/menu';
+import {handleCsProp} from '@workday/canvas-kit-styling';
 
 import {useComboboxModel} from './hooks/useComboboxModel';
 
@@ -24,7 +25,7 @@ export const ComboboxCard = createSubcomponent('div')({
   elemPropsHook: useComboboxCard,
 })<ComboboxCardProps>(({children, ...elemProps}, Element) => {
   return (
-    <Menu.Card as={Element} {...elemProps}>
+    <Menu.Card as={Element} {...handleCsProp(elemProps)}>
       {children}
     </Menu.Card>
   );

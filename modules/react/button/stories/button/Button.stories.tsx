@@ -1,14 +1,15 @@
 import {Meta} from '@storybook/react';
-import mdxDoc from './Button.mdx';
 
+import mdxDoc from './Button.mdx';
+import {CustomStyles as CustomStylesExample} from './examples/CustomStyles';
+import {Delete as DeleteExample} from './examples/Delete';
+import {DeleteOutline as DeleteOutlineExample} from './examples/DeleteOutline';
 import {Primary as PrimaryExample} from './examples/Primary';
 import {PrimaryInverse as PrimaryInverseExample} from './examples/PrimaryInverse';
 import {Secondary as SecondaryExample} from './examples/Secondary';
 import {SecondaryInverse as SecondaryInverseExample} from './examples/SecondaryInverse';
 import {Tertiary as TertiaryExample} from './examples/Tertiary';
 import {TertiaryInverse as TertiaryInverseExample} from './examples/TertiaryInverse';
-import {Delete as DeleteExample} from './examples/Delete';
-import {CustomStyles as CustomStylesExample} from './examples/CustomStyles';
 import {ThemeOverrides as ThemeOverridesExample} from './examples/ThemeOverrides';
 
 export default {
@@ -41,6 +42,9 @@ export const TertiaryInverse = {
 };
 export const Delete = {
   render: DeleteExample,
+};
+export const DeleteOutline = {
+  render: DeleteOutlineExample,
 };
 export const CustomStyles = {
   render: CustomStylesExample,

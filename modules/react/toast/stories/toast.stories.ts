@@ -1,14 +1,15 @@
 import {Meta, StoryObj} from '@storybook/react';
 
-import mdxDoc from './toast.mdx';
-
 import {Toast} from '@workday/canvas-kit-react/toast';
+
+import {Alt as AltExample} from './examples/Alt';
 import {Basic as BasicExample} from './examples/Basic';
+import {RTL as RTLExample} from './examples/RTL';
 import {ToastAlert as ToastAlertExample} from './examples/ToastAlert';
 import {ToastDialog as ToastDialogExample} from './examples/ToastDialog';
 import {WithActionLinkAndCloseIcon as WithActionLinkAndCloseIconExample} from './examples/WithActionLinkAndCloseIcon';
 import {WithPopper as WithPopperExample} from './examples/WithPopper';
-import {RTL as RTLExample} from './examples/RTL';
+import mdxDoc from './toast.mdx';
 
 export default {
   title: 'Components/Popups/Toast',
@@ -25,6 +26,9 @@ type Story = StoryObj<typeof Toast>;
 
 export const Basic: Story = {
   render: BasicExample,
+};
+export const Alt: Story = {
+  render: AltExample,
 };
 export const ToastAlert: Story = {
   render: ToastAlertExample,

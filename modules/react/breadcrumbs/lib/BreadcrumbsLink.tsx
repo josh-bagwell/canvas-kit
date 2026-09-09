@@ -1,8 +1,8 @@
-import {createComponent} from '@workday/canvas-kit-react/common';
 import {Hyperlink, HyperlinkProps} from '@workday/canvas-kit-react/button';
+import {createComponent} from '@workday/canvas-kit-react/common';
 import {OverflowTooltip, OverflowTooltipProps} from '@workday/canvas-kit-react/tooltip';
-import {system} from '@workday/canvas-tokens-web';
 import {createStencil, handleCsProp, px2rem} from '@workday/canvas-kit-styling';
+import {system} from '@workday/canvas-tokens-web';
 
 export interface BreadcrumbsLinkProps extends HyperlinkProps {
   /**
@@ -14,7 +14,7 @@ export interface BreadcrumbsLinkProps extends HyperlinkProps {
    *
    * @default 350px
    */
-  maxWidth?: number;
+  maxWidth?: string | number;
   tooltipProps?: OverflowTooltipProps | {};
 }
 
@@ -23,11 +23,25 @@ export const breadcrumbsLinkStencil = createStencil({
     maxWidth: '',
   },
   base: ({maxWidth}) => ({
-    ...system.type.subtext.large,
+    fontFamily: system.fontFamily.default,
+    fontSize: system.legacy.fontSize.subtext.lg,
+    fontWeight: system.fontWeight.normal,
+    letterSpacing: system.legacy.letterSpacing.subtext.lg,
+    lineHeight: system.legacy.lineHeight.subtext.lg,
+    color: system.color.fg.default,
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     maxWidth,
+    '&:hover, &.hover': {
+      color: system.color.fg.strong,
+      backgroundColor: system.legacy.color.surface.overlay.hover.default,
+      textDecoration: 'underline',
+    },
+    '&:active, &.active': {
+      color: system.color.fg.strong,
+      backgroundColor: system.legacy.color.surface.overlay.pressed.default,
+    },
   }),
 });
 
@@ -45,7 +59,8 @@ export const BreadcrumbsLink = createComponent('a')({
           ref={ref}
           as={Element}
           role="link"
-          variant="standalone"
+          variant="secondary"
+          linkType="standalone"
           {...handleCsProp(
             elemProps,
             breadcrumbsLinkStencil({

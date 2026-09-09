@@ -1,16 +1,22 @@
-import React from 'react';
-
-import {CanvasProvider, ContentDirection} from '@workday/canvas-kit-react/common';
-import {StaticStates} from '@workday/canvas-kit-react/testing';
-import {saveAsIcon} from '@workday/canvas-system-icons-web';
-
-import {customColorTheme} from '../../../../utils/storybook';
-
+import {CanvasProvider} from '@workday/canvas-kit-react/common';
+import {Flex} from '@workday/canvas-kit-react/layout';
 // unreleased path
 import {Menu} from '@workday/canvas-kit-react/menu';
-import {Flex} from '@workday/canvas-kit-react/layout';
+import {StaticStates} from '@workday/canvas-kit-react/testing';
+import {px2rem} from '@workday/canvas-kit-styling';
+import {saveAsIcon} from '@workday/canvas-system-icons-web';
+import {base, system} from '@workday/canvas-tokens-web';
 
 const fontDelay = 150; // best guess for the font delay to prevent incorrect Chromatic regressions
+
+/**
+ * Numerical theme with independent focus and selected shortcuts.
+ */
+const menuNumericalTheme = {
+  brand: {primary: {'600': 'purple'}},
+  selected: {fg: 'purple', surface: 'lavender'},
+  focus: {primary: 'turquoise'},
+};
 
 export default {
   title: 'Testing/Popups/Menu',
@@ -25,7 +31,7 @@ export default {
 
 const AllStatesMenuItem = () => (
   <Menu initialSelectedIds={['selected']} initialCursorId="non-existent">
-    <Menu.Card style={{animation: 'none', width: 300}}>
+    <Menu.Card cs={{animation: 'none', width: px2rem(300)}}>
       <Menu.List>
         <Menu.Group title="Group Heading One">
           <Menu.Item>Normal Item</Menu.Item>
@@ -33,6 +39,9 @@ const AllStatesMenuItem = () => (
           <Menu.Item className="hover">Hovered Item</Menu.Item>
           <Menu.Item className="focus hover">Focused & Hovered Item</Menu.Item>
           <Menu.Item aria-disabled={true}>Disabled Item</Menu.Item>
+          <Menu.Item className="focus" aria-disabled={true}>
+            Focused & Disabled Item
+          </Menu.Item>
           <Menu.Item>Wrapped Text Item Wrapped Text Item Wrapped Text Item</Menu.Item>
           <Menu.Item>
             Superlonglinethatshouldbreakonitsownwithouthavingtodoanythingspecial
@@ -73,20 +82,45 @@ export const MenuItemStates = {
   render: () => {
     return (
       <StaticStates>
-        <Flex gap="xs">
+        <Flex cs={{gap: system.gap.md}}>
           <div>
             <h3>Normal</h3>
             <AllStatesMenuItem />
           </div>
           <div>
             <h3>Themed</h3>
-            <CanvasProvider theme={{canvas: customColorTheme}}>
+            <CanvasProvider theme={menuNumericalTheme}>
               <AllStatesMenuItem />
             </CanvasProvider>
           </div>
           <div>
             <h3>RTL</h3>
-            <CanvasProvider theme={{canvas: {direction: ContentDirection.RTL}}}>
+            <CanvasProvider dir="rtl">
+              <AllStatesMenuItem />
+            </CanvasProvider>
+          </div>
+        </Flex>
+      </StaticStates>
+    );
+  },
+};
+
+export const MenuItemStatesCustomTheme = {
+  render: () => {
+    return (
+      <StaticStates>
+        <Flex cs={{gap: system.gap.md}}>
+          <div>
+            <h3>Custom Themed</h3>
+            <CanvasProvider
+              theme={{
+                brand: {
+                  primary: {'600': base.indigo500},
+                },
+                selected: {fg: base.indigo600, surface: base.indigoA50},
+                focus: {primary: base.magenta900},
+              }}
+            >
               <AllStatesMenuItem />
             </CanvasProvider>
           </div>
@@ -98,13 +132,16 @@ export const MenuItemStates = {
 
 const AllStatesMenuOption = () => (
   <Menu initialSelectedIds={['selected']} initialCursorId="non-existent">
-    <Menu.Card style={{animation: 'none', width: 300}}>
+    <Menu.Card cs={{animation: 'none', width: px2rem(300)}}>
       <Menu.List>
         <Menu.Option>Normal Item</Menu.Option>
         <Menu.Option className="focus">Focused Item</Menu.Option>
         <Menu.Option className="hover">Hovered Item</Menu.Option>
         <Menu.Option className="focus hover">Focused & Hovered Item</Menu.Option>
         <Menu.Option aria-disabled={true}>Disabled Item</Menu.Option>
+        <Menu.Option className="focus" aria-disabled={true}>
+          Focused & Disabled Item
+        </Menu.Option>
         <Menu.Option aria-selected={true}>Selected Item</Menu.Option>
         <Menu.Option className="focus" aria-selected={true}>
           Focused & Selected Item
@@ -166,7 +203,7 @@ const AllStatesMenuOption = () => (
 const MenuWithGroups = () => {
   return (
     <Menu initialSelectedIds={['0']} initialCursorId="non-existent">
-      <Menu.Card style={{animation: 'none', width: 300}}>
+      <Menu.Card cs={{animation: 'none', width: px2rem(300)}}>
         <Menu.List>
           <Menu.Group title="Group Heading One">
             <Menu.Item className="focus">Group one, Item one (focused)</Menu.Item>
@@ -186,20 +223,20 @@ export const MenuOptionStates = {
   render: () => {
     return (
       <StaticStates>
-        <Flex gap="xs">
+        <Flex cs={{gap: system.gap.md}}>
           <div>
             <h3>Normal</h3>
             <AllStatesMenuOption />
           </div>
           <div>
             <h3>Themed</h3>
-            <CanvasProvider theme={{canvas: customColorTheme}}>
+            <CanvasProvider theme={menuNumericalTheme}>
               <AllStatesMenuOption />
             </CanvasProvider>
           </div>
           <div>
             <h3>RTL</h3>
-            <CanvasProvider theme={{canvas: {direction: ContentDirection.RTL}}}>
+            <CanvasProvider dir="rtl">
               <AllStatesMenuOption />
             </CanvasProvider>
           </div>
@@ -213,14 +250,14 @@ export const MenuGroups = {
   render: () => {
     return (
       <StaticStates>
-        <Flex gap="xs">
+        <Flex cs={{gap: system.gap.lg}}>
           <div>
             <h3>LTR</h3>
             <MenuWithGroups />
           </div>
           <div>
             <h3>RTL</h3>
-            <CanvasProvider theme={{canvas: {direction: ContentDirection.RTL}}}>
+            <CanvasProvider dir="rtl">
               <MenuWithGroups />
             </CanvasProvider>
           </div>

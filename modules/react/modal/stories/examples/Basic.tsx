@@ -1,6 +1,6 @@
-import {Modal} from '@workday/canvas-kit-react/modal';
 import {PrimaryButton} from '@workday/canvas-kit-react/button';
-import {Flex, Box} from '@workday/canvas-kit-react/layout';
+import {Box} from '@workday/canvas-kit-react/layout';
+import {Modal} from '@workday/canvas-kit-react/modal';
 
 export const Basic = () => {
   const handleAcknowledge = () => {
@@ -19,17 +19,17 @@ export const Basic = () => {
           <Modal.CloseIcon aria-label="Close" />
           <Modal.Heading>MIT License</Modal.Heading>
           <Modal.Body>
-            <Box as="p" marginY="zero">
+            <Box as="p" cs={{marginBlock: '0'}}>
               Permission is hereby granted, free of charge, to any person obtaining a copy of this
               software and associated documentation files (the "Software").
             </Box>
           </Modal.Body>
-          <Flex gap="s" padding="xxs">
+          <Modal.ButtonGroup>
+            <Modal.CloseButton onClick={handleCancel}>Cancel</Modal.CloseButton>
             <Modal.CloseButton as={PrimaryButton} onClick={handleAcknowledge}>
               Acknowledge
             </Modal.CloseButton>
-            <Modal.CloseButton onClick={handleCancel}>Cancel</Modal.CloseButton>
-          </Flex>
+          </Modal.ButtonGroup>
         </Modal.Card>
       </Modal.Overlay>
     </Modal>

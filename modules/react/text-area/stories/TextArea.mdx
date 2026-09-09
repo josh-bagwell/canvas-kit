@@ -1,22 +1,18 @@
-import {
-  ExampleCodeBlock,
-  SymbolDoc,
-  Specifications,
-  InformationHighlight,
-} from '@workday/canvas-kit-docs';
-import {Caution} from './examples/Caution';
+import {Meta} from '@storybook/blocks';
+
+import {ExampleCodeBlock, Specifications, SymbolDoc} from '@workday/canvas-kit-docs';
+
+import TextAreaStoriesMeta from './TextArea.stories';
 import {Basic} from './examples/Basic';
 import {Disabled} from './examples/Disabled';
-import {Error} from './examples/Error';
 import {Grow} from './examples/Grow';
 import {LabelPosition} from './examples/LabelPosition';
 import {Placeholder} from './examples/Placeholder';
 import {RefForwarding} from './examples/RefForwarding';
 import {Required} from './examples/Required';
 import {ResizeConstraints} from './examples/ResizeConstraints';
-import * as TextAreaStories from './TextArea.stories';
 
-<Meta of={TextAreaStories} />
+<Meta of={TextAreaStoriesMeta} />
 
 # Canvas Kit Text Area
 
@@ -34,8 +30,8 @@ yarn add @workday/canvas-kit-react
 
 ### Basic Example
 
-Text Area should be used in tandem with [Form Field](/components/inputs/form-field/) to meet
-accessibility standards.
+Text Area should be used in tandem with [Form Field](/components/inputs/form-field/) to ensure
+proper label association and screen reader support.
 
 <ExampleCodeBlock code={Basic} />
 
@@ -47,10 +43,15 @@ Set the `disabled` prop of the Text Area to prevent users from interacting with 
 
 ### Placeholder
 
-Set the `placeholder` prop of the Text Input to display a sample of its expected format or value
+Set the `placeholder` prop of the Text Area to display a sample of its expected format or value
 before a value has been provided.
 
 <ExampleCodeBlock code={Placeholder} />
+
+> **Accessibility Note**: Always provide a persistent `FormField.Label` and never rely on
+> placeholder text as the only label for a text area. Placeholders can disappear or lack sufficient
+> contrast. Use placeholders only for short format examples, and place detailed instructions or
+> guidance in `FormField.Hint` instead of the placeholder.
 
 ### Ref Forwarding
 
@@ -71,6 +72,10 @@ accepts the following values:
 
 <ExampleCodeBlock code={ResizeConstraints} />
 
+> **Accessibility Note**: Allowing users to resize the text area (default `resize: both`) improves
+> accessibility by letting them adjust it for comfort. Avoid disabling resizing (`resize: none`)
+> unless necessary, and always ensure the initial size meets the needs of your content.
+
 ### Grow
 
 Set the `grow` prop of the Text Area to `true` to configure the Text Area to expand to the width of
@@ -87,28 +92,155 @@ input component. By default, the orientation will be set to `vertical`.
 
 ### Required
 
-Set the `required` prop of the wrapping Form Field to `true` to indicate that the field is required.
-Labels for required fields are suffixed by a red asterisk.
+Set the `isRequired` prop of the wrapping Form Field to `true` to indicate that the field is
+required. Labels for required fields are suffixed by a red asterisk.
 
 <ExampleCodeBlock code={Required} />
 
 ### Error States
 
-Set the `error` prop of the wrapping Form Field to `"caution"` or
-`"error"` to set the Text Area to the Caution or Error state, respectively. You will
-also need to set the `hintId` and `hintText` props on the Form Field to meet accessibility
-standards.
+Form Field provides error and caution states for Text Area. Set the `error` prop on Form Field to
+`"error"` or `"caution"` and use `FormField.Hint` to provide error messages. See
+[Form Field's Error documentation](/components/inputs/form-field/#error-states) for examples and
+accessibility guidance.
 
-The `error` prop may be applied directly to the Text Area with a value of `"TextArea.ErrorType.Caution"`
-or `TextArea.ErrorType.Error` if Form Field is not being used.
+## Accessibility
 
-#### Caution
+The primary accessibility goal for `TextArea` is to give every user a visible, persistent label and
+clear instructions, and to ensure assistive technology users can identify the multi-line field and
+hear hints, errors, required state, and character-limit information when the control receives focus.
+Use `TextArea` when users need to enter multiple lines or paragraphs of text. For single-line values
+(names, emails, short answers), use [TextInput](/components/inputs/text-input/) instead.
 
-<ExampleCodeBlock code={Caution} />
+### Minimum Accessible Structure
 
-#### Error
+Build on the Basic example: label first, then the input inside `FormField.Field`. This order matches
+the DOM reading sequence and ensures the label's `htmlFor` targets the `<textarea>` before hint text
+follows the control.
 
-<ExampleCodeBlock code={Error} />
+```tsx
+import {FormField} from '@workday/canvas-kit-react/form-field';
+import {TextArea} from '@workday/canvas-kit-react/text-area';
+
+<FormField>
+  <FormField.Label>Leave a Review</FormField.Label>
+  <FormField.Field>
+    <FormField.Input as={TextArea} />
+    <FormField.Hint>Share any additional feedback.</FormField.Hint>
+  </FormField.Field>
+</FormField>;
+```
+
+Every `TextArea` requires **`FormField`**, a visible **`FormField.Label`**, and
+**`FormField.Input as={TextArea}`** so the control has a programmatically determinable name,
+relationships, and instructions. See
+[FormField's accessibility documentation](/components/inputs/form-field/#accessibility) for shared
+form-field guidance. Include **`FormField.Hint`** for instructions, validation messages, or
+character counts—`FormField` associates that text with the text area through `aria-describedby`.
+
+### Built-in Behaviors
+
+Canvas Kit applies these automatically when you compose `TextArea` with `FormField` subcomponents.
+**Do not duplicate them** in consuming code.
+
+**ARIA and DOM** (_applied by subcomponents_):
+
+- **`TextArea`**: Renders a native `<textarea>` element. Screen readers identify it as a multi-line
+  text input.
+- **`TextArea` `disabled`**: Maps to the native `disabled` attribute; disabled fields are removed
+  from the tab order.
+- **User-resizable dimensions**: Defaults to `resize: both` so users can adjust the control for
+  visual comfort.
+
+**Keyboard** (_standard `TextArea` behavior_):
+
+<kbd>Enter</kbd>: Inserts a new line (native `<textarea>` behavior). Do not add custom key handlers that prevent standard text editing.
+
+`TextArea` uses native `<textarea>` keyboard behavior (tab order, label activation, and text-editing
+shortcuts).
+
+**Screen reader expectations** (_when built-in behaviors are used as intended_):
+
+- On focus, assistive technology announces the field label and, when applicable: required state,
+  invalid state (`error="error"`), and hint or error text via `aria-describedby`.
+- The current value or "blank" is announced when the text area receives focus.
+- The Caution state is visual only — `aria-invalid` is **not** set for `error="caution"`.
+- Disabled text areas may be announced as unavailable and are skipped in the tab order.
+
+For rendered label, input, and hint association markup, see the DOM examples in
+[FormField's Built-in Behaviors](/components/inputs/form-field/#built-in-behaviors). `TextArea`
+renders a native `<textarea>` in place of `<input>`.
+
+### Accessibility Requirements
+
+Required in application code for an accessible `TextArea`. Rows marked _(conditional)_ apply only
+when the situation matches—otherwise omit.
+
+**If no design spec is provided:** use a visible `FormField.Label`, wrap the control with
+`FormField.Input as={TextArea}`, omit `isHidden`, keep default `resize: both`, omit a custom `id`
+unless testing or composition requires it, and omit a `ref` unless programmatic focus is required.
+
+**Programmatic focus** _(conditional — omit by default)_:
+
+Use a ref when the product needs to move focus to the text area after an action (for example,
+focusing the field after a validation error, or a control that focuses the text area). Do not attach
+a `ref` or call `focus()` unless the design or developer asks for it. See
+[Ref Forwarding](#ref-forwarding) under Usage for a complete Storybook example.
+
+```tsx
+const Example = () => {
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+
+  const handleClick = () => {
+    ref.current?.focus();
+  };
+
+  return (
+    <>
+      <FormField>
+        <FormField.Label>Leave a Review</FormField.Label>
+        <FormField.Field>
+          <FormField.Input as={TextArea} ref={ref} />
+        </FormField.Field>
+      </FormField>
+      <PrimaryButton onClick={handleClick}>Focus Text Area</PrimaryButton>
+    </>
+  );
+};
+```
+
+| Requirement                        | How to satisfy                                                                                                                                                                                                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Input wiring                       | **`FormField.Input as={TextArea}`** wrapping every `TextArea` instance. See [FormField accessibility](/components/inputs/form-field/#accessibility) for label, hint, error, and required wiring                                                                     |
+| Character limit _(conditional)_    | `maxLength` on **`FormField.Input`**, visible count in **`FormField.Hint`**, and debounced **`AriaLiveRegion`**. See [Aria Live Regions guide](?path=/docs/guides-accessibility-aria-live-regions--docs#debouncing-an-arialiveregion-textarea-with-character-limit) |
+| Programmatic focus _(conditional)_ | `ref` on **`FormField.Input`** and call `focus()` when moving focus to the field after an action—omit by default (see **Programmatic focus** above)                                                                                                                 |
+
+**Summary for code generation:**
+
+- **REQUIRED:** visible label, `FormField.Input as={TextArea}` wiring
+- **CONDITIONAL:** character limit with live region, programmatic focus via `ref`. See
+  [FormField accessibility](/components/inputs/form-field/#accessibility) for shared FormField
+  conditionals (hint/error, required, disabled, placeholder, stable `id`).
+
+### Anti-Patterns
+
+Do **not** generate code that does the following (see **Accessibility Requirements** above for what
+to supply instead):
+
+- **Unlabeled text areas**: Do not use `TextArea` without `FormField` and `FormField.Label` (see
+  **Minimum accessible structure**). For shared FormField anti-patterns (manual ARIA wiring,
+  placeholder-only labels, color-only errors, broken ID references), see
+  [FormField Anti-Patterns](/components/inputs/form-field/#anti-patterns).
+- **Single-line input for multi-line content**: Do not use
+  [TextInput](/components/inputs/text-input/) when the user needs to enter paragraphs or multi-line
+  text; use `TextArea` instead.
+- **Per-keystroke character announcements**: Do not announce character counts after every keystroke;
+  debounce `AriaLiveRegion` updates so screen reader users are not interrupted while typing.
+- **Disabling resize unnecessarily**: Do not set `resize` to `none` unless there is a strong design
+  or layout requirement; users lose a visual comfort affordance that supports low-vision and motor
+  needs.
+- **Programmatic focus by default**: Do not attach a `ref` or call `focus()` on the text area unless
+  the design or developer asks for it (see **Programmatic focus** in Accessibility Requirements).
 
 ## Component API
 
@@ -116,4 +248,4 @@ or `TextArea.ErrorType.Error` if Form Field is not being used.
 
 ## Specifications
 
-<Specifications file="TextArea.spec.ts" name="Text Area" />
+<Specifications file="./cypress/component/TextArea.spec.tsx" name="Text Area" />

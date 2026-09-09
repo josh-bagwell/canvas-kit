@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import {createComponent} from '@workday/canvas-kit-react/common';
-import {mergeStyles, BoxProps} from '@workday/canvas-kit-react/layout';
-import {createStencil, px2rem} from '@workday/canvas-kit-styling';
+import {cornerShapeStencil, createComponent} from '@workday/canvas-kit-react/common';
+import {BoxProps, mergeStyles} from '@workday/canvas-kit-react/layout';
+import {createStencil, cssVar, px2rem} from '@workday/canvas-kit-styling';
 import {system} from '@workday/canvas-tokens-web';
 
-import {CardHeading} from './CardHeading';
 import {CardBody} from './CardBody';
+import {CardHeading} from './CardHeading';
 
 export interface CardProps extends BoxProps {
   /**
@@ -14,32 +14,37 @@ export interface CardProps extends BoxProps {
    */
   children?: React.ReactNode;
   /**
-   * The variant of the Card. Can be `default`, `borderless` or `filled`.
+   * The variant of the Card. Can be `alt`, `tonal` or default.
    * @default 'default'
    */
-  variant?: 'borderless' | 'filled';
+  variant?: 'alt' | 'tonal';
 }
 
 // .cnvs-card
 export const cardStencil = createStencil({
-  base: {
+  extends: cornerShapeStencil,
+  vars: {
+    background: '',
+  },
+  base: ({background}) => ({
+    [cornerShapeStencil.vars.shape]: system.legacy.shape.xxl,
     display: 'flex',
     flexDirection: 'column',
-    gap: system.space.x6,
-    padding: system.space.x8,
-    backgroundColor: system.color.bg.default,
-    borderRadius: system.shape.x2,
-    border: `${px2rem(1)} solid ${system.color.border.container}`,
-  },
+    gap: system.legacy.padding.sm,
+    padding: system.legacy.padding.xl,
+    background: cssVar(background, system.legacy.color.surface.default),
+    border: `${px2rem(1)} solid ${system.legacy.color.border.default}`,
+  }),
   modifiers: {
     variant: {
-      borderless: {
-        borderColor: 'transparent',
-      },
-      filled: {
-        backgroundColor: system.color.bg.alt.soft,
+      tonal: ({background}) => ({
+        background: cssVar(background, system.legacy.color.surface.alt.strong),
         borderColor: system.color.border.transparent,
-      },
+      }),
+      alt: ({background}) => ({
+        background: cssVar(background, system.sana.color.surface.elevated),
+        borderColor: system.sana.color.border.elevated,
+      }),
     },
   },
 });

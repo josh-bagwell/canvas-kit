@@ -2,14 +2,15 @@ import * as React from 'react';
 
 import {createContainer} from '@workday/canvas-kit-react/common';
 
-import {usePopupModel} from './hooks';
-import {PopupCard} from './PopupCard';
-import {PopupTarget} from './PopupTarget';
-import {PopupPopper} from './PopupPopper';
-import {PopupHeading} from './PopupHeading';
-import {PopupCloseIcon} from './PopupCloseIcon';
-import {PopupCloseButton} from './PopupCloseButton';
 import {PopupBody} from './PopupBody';
+import {PopupButtonGroup} from './PopupButtonGroup';
+import {PopupCard} from './PopupCard';
+import {PopupCloseButton} from './PopupCloseButton';
+import {PopupCloseIcon} from './PopupCloseIcon';
+import {PopupHeading} from './PopupHeading';
+import {PopupPopper} from './PopupPopper';
+import {PopupTarget} from './PopupTarget';
+import {usePopupModel} from './hooks';
 
 export interface PopupProps {
   /**
@@ -92,10 +93,11 @@ export const Popup = createContainer()({
      */
     CloseIcon: PopupCloseIcon,
     /**
-     * A `Popup.Heading` is a wrapper around {@link CardHeading Card.Heading} that connect the
-     * heading to a {@link PopupModel}. It will add an `id` to the element that match the
-     * `aria-labelledby` that is applied to the `Popup.Card` element for accessibility. The behavior
-     * hook used is called {@link usePopupHeading}.
+     * A `Popup.Heading` renders a heading element styled with {@link cardHeadingStencil}
+     * (with popup-specific padding and type level values). It connects the heading to a
+     * {@link PopupModel}. It adds an `id` that matches the `aria-labelledby` applied to the
+     * `Popup.Card` element for accessibility. The behavior hook used is called
+     * {@link usePopupHeading}.
      */
     Heading: PopupHeading,
     /**
@@ -110,6 +112,12 @@ export const Popup = createContainer()({
      * {@link usePopupCloseButton}.
      */
     CloseButton: PopupCloseButton,
+    /**
+     * A `Popup.ButtonGroup` component styled with {@link popupButtonGroupStencil}. It is used to
+     * visually group buttons within a popup and can place buttons at the start, center, or end of the
+     * container.
+     */
+    ButtonGroup: PopupButtonGroup,
   },
 })<PopupProps>(({children}: PopupProps) => {
   return <>{children}</>;

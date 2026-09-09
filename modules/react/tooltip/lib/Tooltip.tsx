@@ -1,18 +1,19 @@
 import * as React from 'react';
 import innerText from 'react-innertext';
 
+import {createComponent, mergeCallback, useLocalRef} from '@workday/canvas-kit-react/common';
 import {
-  getTransformFromPlacement,
   Placement,
   Popper,
   defaultFallbackPlacements,
+  getTransformFromPlacement,
 } from '@workday/canvas-kit-react/popup';
-import {createComponent, mergeCallback} from '@workday/canvas-kit-react/common';
+import {CSProps, handleCsProp} from '@workday/canvas-kit-styling';
 
 import {TooltipContainer} from './TooltipContainer';
 import {useTooltip} from './useTooltip';
 
-export interface TooltipProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface TooltipProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'>, CSProps {
   /**
    * This should be a string in most cases. HTML is supported, but only text is understood
    * by assistive technology. This is true for both `label` and `describe` modes.
@@ -75,6 +76,10 @@ export interface TooltipProps extends Omit<React.HTMLAttributes<HTMLDivElement>,
    * Amount of time (in ms) to delay before hiding the tooltip
    */
   hideDelay?: number;
+  /**
+   * The `alt` variant is designed for use on alternative page backgrounds (`system.color.bg.alt.default`). Use this variant to maintain proper visual hierarchy when placing components on colored backgrounds. While the default variant should be used on `system.color.bg.default` backgrounds, the `alt` variant ensures the component remains visually elevated on `system.color.bg.alt.default` backgrounds.
+   */
+  variant?: 'alt';
 }
 
 function mergeCallbacks<T extends {[key: string]: any}>(
@@ -82,14 +87,17 @@ function mergeCallbacks<T extends {[key: string]: any}>(
   componentProps: T,
   keys: (keyof T)[] = Object.keys(componentProps)
 ) {
-  return (keys as string[]).reduce((mergedProps, key) => {
-    if (typeof elemProps[key] === 'function') {
-      mergedProps[key] = mergeCallback(componentProps[key], elemProps[key]);
-    } else {
-      mergedProps[key] = componentProps[key];
-    }
-    return mergedProps;
-  }, {} as {[key: string]: any});
+  return (keys as string[]).reduce(
+    (mergedProps, key) => {
+      if (typeof elemProps[key] === 'function') {
+        mergedProps[key] = mergeCallback(componentProps[key], elemProps[key]);
+      } else {
+        mergedProps[key] = componentProps[key];
+      }
+      return mergedProps;
+    },
+    {} as {[key: string]: any}
+  );
 }
 
 export const Tooltip = createComponent('div')({
@@ -102,6 +110,7 @@ export const Tooltip = createComponent('div')({
     showDelay = 300,
     hideDelay = 100,
     fallbackPlacements = defaultFallbackPlacements,
+    variant,
     ...elemProps
   }: TooltipProps) {
     const titleText = innerText(title);
@@ -111,6 +120,29 @@ export const Tooltip = createComponent('div')({
       showDelay,
       hideDelay,
     });
+
+    const [elementHasFocus, setElementHasFocus] = React.useState(false);
+    const {localRef: targetRef} = useLocalRef<HTMLElement>();
+
+    React.useEffect(() => {
+      const target = targetRef.current;
+      if (!target) {
+        return;
+      }
+
+      const updateFocusState = () => {
+        setElementHasFocus(target.matches(':focus-visible') || target.classList.contains('focus'));
+      };
+
+      updateFocusState(); // Check initial state
+      target.addEventListener('focus', updateFocusState);
+      target.addEventListener('blur', updateFocusState);
+
+      return () => {
+        target.removeEventListener('focus', updateFocusState);
+        target.removeEventListener('blur', updateFocusState);
+      };
+    }, [targetRef]);
 
     return (
       <React.Fragment>
@@ -125,7 +157,13 @@ export const Tooltip = createComponent('div')({
           {({placement}) => {
             const transformOrigin = getTransformFromPlacement(placement);
             return (
-              <TooltipContainer transformOrigin={transformOrigin} {...elemProps} {...tooltipProps}>
+              <TooltipContainer
+                transformOrigin={transformOrigin}
+                {...handleCsProp(elemProps)}
+                {...tooltipProps}
+                elementHasFocus={elementHasFocus}
+                variant={variant}
+              >
                 {title}
               </TooltipContainer>
             );

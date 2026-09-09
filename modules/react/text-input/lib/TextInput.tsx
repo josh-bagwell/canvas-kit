@@ -1,7 +1,12 @@
-import {createComponent, GrowthBehavior, ErrorType} from '@workday/canvas-kit-react/common';
-import {createStencil, cssVar, px2rem, calc, CSProps} from '@workday/canvas-kit-styling';
-import {brand, system} from '@workday/canvas-tokens-web';
+import {
+  ErrorType,
+  GrowthBehavior,
+  cornerShapeStencil,
+  createComponent,
+} from '@workday/canvas-kit-react/common';
 import {mergeStyles} from '@workday/canvas-kit-react/layout';
+import {CSProps, createStencil, cssVar, px2rem} from '@workday/canvas-kit-styling';
+import {system} from '@workday/canvas-tokens-web';
 
 export interface TextInputProps extends GrowthBehavior, CSProps {
   /**
@@ -15,45 +20,47 @@ export interface TextInputProps extends GrowthBehavior, CSProps {
 }
 
 export const textInputStencil = createStencil({
+  extends: cornerShapeStencil,
   vars: {
     width: '',
   },
   base: ({width}) => ({
-    ...system.type.subtext.large,
+    [cornerShapeStencil.vars.shape]: system.legacy.shape.lg,
+    fontFamily: system.fontFamily.default,
+    fontSize: system.legacy.fontSize.subtext.lg,
+    fontWeight: system.fontWeight.normal,
+    lineHeight: system.legacy.lineHeight.subtext.lg,
+    letterSpacing: system.legacy.letterSpacing.subtext.lg,
     display: 'block',
-    border: `${px2rem(1)} solid ${cssVar(system.color.border.input.default)}`,
-    backgroundColor: system.color.bg.default,
-    borderRadius: system.shape.x1Half,
-    boxSizing: 'border-box',
-    height: system.space.x10,
+    border: `${px2rem(1)} solid ${system.color.border.input.default}`,
+    backgroundColor: system.legacy.color.surface.default,
+    height: system.legacy.size.md,
     transition: '0.2s box-shadow, 0.2s border-color',
-    padding: system.space.x2, // Compensate for border
-    margin: px2rem(0), // Fix Safari
+    padding: system.legacy.padding.xs, // Compensate for border
+    margin: 0, // Fix Safari
     width,
-    minWidth: cssVar(width, calc.add(calc.multiply(system.space.x20, 3), system.space.x10)),
-    color: system.color.text.default,
+    minWidth: cssVar(width, px2rem(280)),
+    color: system.color.fg.default,
     textOverflow: 'ellipsis', // Always show ellipsis for long text inputs as long as it doesn't have focus
 
     '::-ms-clear': {
       display: 'none',
     },
     '&::placeholder': {
-      color: system.color.text.hint,
+      color: system.color.fg.muted.default,
     },
-    '&:is(:hover, .hover)': {
-      borderColor: system.color.border.input.strong,
+    '&:is(:hover, .hover):where(:not([disabled], .disabled))': {
+      borderColor: system.legacy.color.border.input.hover,
     },
     '&:is(:focus-visible, .focus):where(:not([disabled]))': {
-      borderColor: brand.common.focusOutline,
-      boxShadow: `inset 0 0 0 1px ${cssVar(brand.common.focusOutline)}`,
+      borderColor: system.legacy.color.brand.focus.primary,
+      boxShadow: `inset 0 0 0 1px ${system.legacy.color.brand.focus.primary}`,
       outline: `${px2rem(2)} solid transparent`,
     },
     '&:is(:disabled, .disabled)': {
-      backgroundColor: system.color.bg.alt.softer,
-      borderColor: system.color.border.input.disabled,
-      color: system.color.fg.disabled,
+      opacity: system.opacity.disabled,
       '&::placeholder': {
-        color: system.color.fg.disabled,
+        opacity: system.opacity.disabled,
       },
     },
   }),
@@ -70,32 +77,48 @@ export const textInputStencil = createStencil({
 
     error: {
       error: {
-        borderColor: brand.common.errorInner,
-        borderWidth: px2rem(2),
-        backgroundColor: brand.error.lightest,
+        borderColor: system.legacy.color.brand.border.critical,
+        boxShadow: `inset 0 0 0 ${px2rem(2)} ${system.legacy.color.brand.border.critical}`,
         '&:is(:hover, .hover, :disabled, .disabled, :focus-visible:not([disabled]), .focus:not([disabled]))':
           {
-            borderColor: brand.common.errorInner,
+            borderColor: system.legacy.color.brand.border.critical,
           },
         '&:is(:focus-visible, .focus):not([disabled])': {
-          boxShadow: `0 0 0 2px ${system.color.border.inverse}, 0 0 0 4px ${brand.common.focusOutline}`,
+          boxShadow: `inset 0 0 0 ${px2rem(2)} ${system.legacy.color.brand.border.critical},
+        0 0 0 2px ${system.legacy.color.focus.inverse},
+        0 0 0 4px ${system.legacy.color.brand.border.primary}`,
           outlineOffset: px2rem(2),
+        },
+        // For Windows High Contrast mode: display error outline at double the
+        // width of the focus ring outline (to differentiate the error outline
+        // from the focus ring outline since both outlines will be the same
+        // color in WHC mode).
+        '@media (forced-colors: active)': {
+          outline: `solid ${px2rem(4)} ButtonBorder`,
         },
       },
       caution: {
-        borderColor: brand.common.alertOuter,
-        boxShadow: `inset 0 0 0 ${px2rem(2)} ${brand.common.alertInner}`,
-        backgroundColor: brand.alert.lightest,
+        borderColor: system.legacy.color.brand.border.caution,
+        boxShadow: `inset 0 0 0 ${px2rem(2)} ${system.legacy.color.brand.focus.caution.inner}`,
         '&:is(:hover, .hover, :disabled, .disabled, :focus-visible:not([disabled]), .focus:not([disabled]))':
           {
-            borderColor: brand.common.alertOuter,
+            borderColor: system.legacy.color.brand.border.caution,
           },
         '&:is(:focus-visible, .focus):not([disabled])': {
-          boxShadow: `inset 0 0 0 ${px2rem(2)} ${brand.common.alertInner},
-        0 0 0 2px ${system.color.border.inverse},
-        0 0 0 4px ${brand.common.focusOutline}`,
+          boxShadow: `inset 0 0 0 ${px2rem(2)} ${system.legacy.color.brand.focus.caution.inner},
+        0 0 0 2px ${system.legacy.color.focus.inverse},
+        0 0 0 4px ${system.legacy.color.brand.border.primary}`,
         },
         outlineOffset: px2rem(2),
+        // For Windows High Contrast mode: see comment above regarding the
+        // error outline. Unlike the error state, outlineOffset for the
+        // caution state is defined outside of the `(:focus-visible, .focus)`
+        // selector so we must override it here to prevent the caution outline
+        // from being separated too far from the input.
+        '@media (forced-colors: active)': {
+          outline: `solid ${px2rem(4)} ButtonBorder`,
+          outlineOffset: 0,
+        },
       },
     },
   },
@@ -113,7 +136,11 @@ export const TextInput = createComponent('input')({
         ref={ref}
         {...mergeStyles(
           elemProps,
-          textInputStencil({width: typeof width === 'number' ? px2rem(width) : width, grow, error})
+          textInputStencil({
+            width: typeof width === 'number' ? px2rem(width) : width,
+            grow: grow === true ? 'true' : grow === false ? 'false' : undefined,
+            error,
+          })
         )}
       />
     );

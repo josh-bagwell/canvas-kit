@@ -1,0 +1,54 @@
+import React from 'react';
+
+import {Avatar} from '@workday/canvas-kit-react/avatar';
+import {ComponentStatesTable, StaticStates} from '@workday/canvas-kit-react/testing';
+
+export default {
+  title: 'Testing/Indicators/Avatar',
+  component: Avatar,
+  parameters: {
+    chromatic: {
+      disable: false,
+    },
+  },
+};
+
+export const AvatarStates = () => {
+  return (
+    <StaticStates>
+      <ComponentStatesTable
+        rowProps={[{label: 'Default', props: {}}]}
+        columnProps={[
+          {
+            label: 'Default',
+            props: {variant: 'blue'},
+          },
+          {
+            label: 'Amber',
+            props: {variant: 'amber'},
+          },
+          {
+            label: 'Teal',
+            props: {variant: 'teal'},
+          },
+          {
+            label: 'Purple',
+            props: {variant: 'purple'},
+          },
+          {
+            label: 'Magenta',
+            props: {variant: 'magenta'},
+          },
+          {
+            label: 'Green',
+            props: {variant: 'green'},
+          },
+        ]}
+      >
+        {({variant, ...props}) => {
+          return <Avatar variant={variant} name="John Doe" />;
+        }}
+      </ComponentStatesTable>
+    </StaticStates>
+  );
+};

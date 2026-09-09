@@ -1,14 +1,13 @@
-import React from 'react';
-import {Dialog} from '@workday/canvas-kit-react/dialog';
 import {PrimaryButton} from '@workday/canvas-kit-react/button';
-import {Flex, Grid} from '@workday/canvas-kit-react/layout';
+import {Dialog} from '@workday/canvas-kit-react/dialog';
+import {Grid} from '@workday/canvas-kit-react/layout';
 import {calc, createStyles} from '@workday/canvas-kit-styling';
-import {system} from '@workday/canvas-tokens-web';
+import {base, system} from '@workday/canvas-tokens-web';
 
 const grid = createStyles({
   gridTemplateAreas: "'topButton topButton''leftButton rightButton''bottomButton bottomButton'",
-  height: calc.subtract('100vh', system.space.x16),
-  width: calc.subtract('100vw', system.space.x20),
+  height: calc.subtract('100vh', system.size.xxl),
+  width: calc.subtract('100vw', base.size1000),
 });
 
 const topButton = createStyles({
@@ -34,12 +33,6 @@ const leftButton = createStyles({
 export default {
   title: 'Testing/Popups/Dialog',
   component: Dialog,
-  // parameters: {
-  //   viewport: {
-  //     viewports: customViewport,
-  //     defaultViewport: 'landscape',
-  //   },
-  // },
 };
 
 export const DialogWithFallbackPlacements = () => {
@@ -53,12 +46,14 @@ export const DialogWithFallbackPlacements = () => {
           <Dialog.Popper placement="top">
             <Dialog.Card>
               <Dialog.CloseIcon aria-label="Close" />
-              <Dialog.Heading paddingTop="m">This is dialog heading</Dialog.Heading>
+              <Dialog.Heading cs={{paddingBlockStart: system.padding.md}}>
+                This is dialog heading
+              </Dialog.Heading>
               <Dialog.Body>This is dialog body.</Dialog.Body>
-              <Flex gap="s" padding="xxs" marginTop="xxs">
-                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              <Dialog.ButtonGroup>
                 <Dialog.CloseButton>Cancel</Dialog.CloseButton>
-              </Flex>
+                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              </Dialog.ButtonGroup>
             </Dialog.Card>
           </Dialog.Popper>
         </Dialog>
@@ -69,12 +64,14 @@ export const DialogWithFallbackPlacements = () => {
           <Dialog.Popper placement="left">
             <Dialog.Card>
               <Dialog.CloseIcon aria-label="Close" />
-              <Dialog.Heading paddingTop="m">This is dialog heading</Dialog.Heading>
+              <Dialog.Heading cs={{paddingBlockStart: system.padding.md}}>
+                This is dialog heading
+              </Dialog.Heading>
               <Dialog.Body>This is dialog body.</Dialog.Body>
-              <Flex gap="s" padding="xxs" marginTop="xxs">
-                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              <Dialog.ButtonGroup>
                 <Dialog.CloseButton>Cancel</Dialog.CloseButton>
-              </Flex>
+                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              </Dialog.ButtonGroup>
             </Dialog.Card>
           </Dialog.Popper>
         </Dialog>
@@ -85,12 +82,14 @@ export const DialogWithFallbackPlacements = () => {
           <Dialog.Popper placement="right">
             <Dialog.Card>
               <Dialog.CloseIcon aria-label="Close" />
-              <Dialog.Heading paddingTop="m">This is dialog heading</Dialog.Heading>
+              <Dialog.Heading cs={{paddingBlockStart: system.padding.md}}>
+                This is dialog heading
+              </Dialog.Heading>
               <Dialog.Body>This is dialog body.</Dialog.Body>
-              <Flex gap="s" padding="xxs" marginTop="xxs">
-                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              <Dialog.ButtonGroup>
                 <Dialog.CloseButton>Cancel</Dialog.CloseButton>
-              </Flex>
+                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              </Dialog.ButtonGroup>
             </Dialog.Card>
           </Dialog.Popper>
         </Dialog>
@@ -101,12 +100,14 @@ export const DialogWithFallbackPlacements = () => {
           <Dialog.Popper placement="bottom">
             <Dialog.Card>
               <Dialog.CloseIcon aria-label="Close" />
-              <Dialog.Heading paddingTop="m">This is dialog heading</Dialog.Heading>
+              <Dialog.Heading cs={{paddingBlockStart: system.padding.md}}>
+                This is dialog heading
+              </Dialog.Heading>
               <Dialog.Body>This is dialog body.</Dialog.Body>
-              <Flex gap="s" padding="xxs" marginTop="xxs">
-                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              <Dialog.ButtonGroup>
                 <Dialog.CloseButton>Cancel</Dialog.CloseButton>
-              </Flex>
+                <Dialog.CloseButton as={PrimaryButton}>Submit</Dialog.CloseButton>
+              </Dialog.ButtonGroup>
             </Dialog.Card>
           </Dialog.Popper>
         </Dialog>

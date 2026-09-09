@@ -1,20 +1,20 @@
 import React from 'react';
 
-import {createStencil, handleCsProp, wrapProperty} from '@workday/canvas-kit-styling';
-import {system} from '@workday/canvas-tokens-web';
+import {TertiaryButton} from '@workday/canvas-kit-react/button';
 import {
+  ExtractProps,
   createContainer,
   createElemPropsHook,
   createModelHook,
   createSubcomponent,
   dispatchInputEvent,
-  ExtractProps,
   useForkRef,
 } from '@workday/canvas-kit-react/common';
-
+import {systemIconStencil} from '@workday/canvas-kit-react/icon';
 import {Flex, mergeStyles} from '@workday/canvas-kit-react/layout';
-import {TertiaryButton} from '@workday/canvas-kit-react/button';
-import {xSmallIcon} from '@workday/canvas-system-icons-web';
+import {createStencil, handleCsProp, wrapProperty} from '@workday/canvas-kit-styling';
+import {CanvasSystemIcon, xSmallIcon} from '@workday/canvas-system-icons-web';
+import {component, system} from '@workday/canvas-tokens-web';
 
 import {TextInput} from './TextInput';
 
@@ -41,8 +41,8 @@ export const inputGroupInnerStencil = createStencil({
      * on your own.
      */
     insetInlineEnd: 'initial',
-    width: system.space.x10,
-    height: system.space.x10,
+    width: system.legacy.size.md,
+    height: system.legacy.size.md,
     /**
      * Some inner input group elements are decoration only and should not have pointer events
      */
@@ -57,6 +57,7 @@ export const inputGroupInnerStencil = createStencil({
     height,
     insetInlineStart,
     insetInlineEnd,
+    [systemIconStencil.vars.size]: component.systemIcon.size.xs,
   }),
   modifiers: {
     pointerEvents: {
@@ -162,7 +163,7 @@ export const useClearButton = createElemPropsHook(useInputGroupModel)(model => {
     role: 'presentation',
     // A clear input button doesn't need focus. There's already keyboard keys to clear an input
     tabIndex: -1,
-    icon: xSmallIcon,
+    icon: xSmallIcon as CanvasSystemIcon,
     // "small" is needed to render correctly within a `TextInput`
     size: 'small',
     // prevent a focus change to the button. Focus should stay in the input.
@@ -176,6 +177,14 @@ export const useClearButton = createElemPropsHook(useInputGroupModel)(model => {
   } as const;
 });
 
+const clearButtonStencil = createStencil({
+  base: {
+    svg: {
+      [systemIconStencil.vars.size]: component.systemIcon.size.xs,
+    },
+  },
+});
+
 /**
  * A clear input button. This can be a component later.
  */
@@ -183,7 +192,12 @@ const ClearButton = createSubcomponent(TertiaryButton)({
   modelHook: useInputGroupModel,
   elemPropsHook: useClearButton,
 })<ExtractProps<typeof TertiaryButton, never>>((elemProps, Element) => {
-  return <Element data-part="input-group-clear-button" {...handleCsProp(elemProps)} />;
+  return (
+    <Element
+      data-part="input-group-clear-button"
+      {...handleCsProp(elemProps, clearButtonStencil())}
+    />
+  );
 });
 
 // make sure we always use pixels if the input is a number - this is required for `calc`
@@ -279,11 +293,11 @@ export const InputGroup = createContainer('div')({
   // `offsetEnd` arrays
   React.Children.forEach(children, child => {
     if (React.isValidElement<any>(child) && child.type === InputGroupInnerStart) {
-      const width = wrapProperty(child.props.width || system.space.x10);
+      const width = wrapProperty(child.props.width || system.legacy.size.md);
       offsetsStart.push(width);
     }
     if (React.isValidElement<any>(child) && child.type === InputGroupInnerEnd) {
-      const width = wrapProperty(child.props.width || system.space.x10);
+      const width = wrapProperty(child.props.width || system.legacy.size.md);
       offsetsEnd.push(width);
     }
   });

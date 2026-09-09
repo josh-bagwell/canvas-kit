@@ -1,16 +1,23 @@
-import * as React from 'react';
-
+import {TertiaryButton} from '@workday/canvas-kit-react/button';
+import {
+  CanvasProvider,
+  CanvasProviderTheme,
+  PartialCanvasTheme,
+} from '@workday/canvas-kit-react/common';
+import {SystemIcon} from '@workday/canvas-kit-react/icon';
 import {
   ComponentStatesTable,
-  permutateProps,
   StaticStates,
+  permutateProps,
 } from '@workday/canvas-kit-react/testing';
-import {customColorTheme} from '../../../../utils/storybook';
 import {InputGroup, TextInput} from '@workday/canvas-kit-react/text-input';
+import {px2rem} from '@workday/canvas-kit-styling';
 import {searchIcon, xSmallIcon} from '@workday/canvas-system-icons-web';
-import {SystemIcon} from '@workday/canvas-kit-react/icon';
-import {TertiaryButton} from '@workday/canvas-kit-react/button';
-import {CanvasProvider} from '@workday/canvas-kit-react/common';
+import {system} from '@workday/canvas-tokens-web';
+
+import {customColorTheme, toCanvasProviderTheme} from '../../../../utils/storybook';
+
+type VisualTestingTheme = PartialCanvasTheme | CanvasProviderTheme;
 
 export default {
   title: 'Testing/Inputs/Text Input',
@@ -22,8 +29,8 @@ export default {
   },
 };
 
-export const TextInputStates = () => (
-  <StaticStates>
+export const TextInputStates = ({theme}: {theme?: VisualTestingTheme} = {}) => (
+  <StaticStates theme={toCanvasProviderTheme(theme)}>
     <ComponentStatesTable
       rowProps={permutateProps(
         {
@@ -71,7 +78,7 @@ export const TextInputStates = () => (
       {props => (
         <TextInput
           {...props}
-          style={{minWidth: 60, width: 100}}
+          cs={{minWidth: px2rem(60), width: px2rem(100)}}
           onChange={() => {}} // eslint-disable-line no-empty-function
         />
       )}
@@ -79,12 +86,7 @@ export const TextInputStates = () => (
   </StaticStates>
 );
 
-export const TextInputThemedStates = () => <TextInputStates />;
-TextInputThemedStates.parameters = {
-  canvasProviderDecorator: {
-    theme: customColorTheme,
-  },
-};
+export const TextInputThemedStates = () => <TextInputStates theme={customColorTheme} />;
 
 export const InputGroupStates = () => (
   <StaticStates>
@@ -95,7 +97,7 @@ export const InputGroupStates = () => (
           props: {
             start: [
               <InputGroup.InnerStart>
-                <SystemIcon icon={searchIcon} size="small" />
+                <SystemIcon icon={searchIcon} size="sm" />
               </InputGroup.InnerStart>,
             ],
           },
@@ -115,7 +117,7 @@ export const InputGroupStates = () => (
           props: {
             start: [
               <InputGroup.InnerStart>
-                <SystemIcon icon={searchIcon} size="small" />
+                <SystemIcon icon={searchIcon} size="sm" />
               </InputGroup.InnerStart>,
             ],
             end: [
@@ -182,13 +184,19 @@ export const InputGroupStates = () => (
           label: 'Variable Width',
           props: {
             end: [
-              <InputGroup.InnerEnd width="10px" backgroundColor="blueberry200">
+              <InputGroup.InnerEnd width="10px" cs={{background: system.color.surface.info.strong}}>
                 <span>1</span>
               </InputGroup.InnerEnd>,
-              <InputGroup.InnerEnd width="20px" backgroundColor="cantaloupe200">
+              <InputGroup.InnerEnd
+                width="20px"
+                cs={{background: system.color.surface.warning.strong}}
+              >
                 <span>2</span>
               </InputGroup.InnerEnd>,
-              <InputGroup.InnerEnd width="30px" backgroundColor="greenApple200">
+              <InputGroup.InnerEnd
+                width="30px"
+                cs={{background: system.color.surface.success.strong}}
+              >
                 <span>3</span>
               </InputGroup.InnerEnd>,
             ],
@@ -201,8 +209,8 @@ export const InputGroupStates = () => (
       ]}
     >
       {({value, placeholder, ...props}) => (
-        <CanvasProvider theme={{canvas: {direction: props.dir}}}>
-          <InputGroup width={300}>
+        <CanvasProvider dir={props.dir}>
+          <InputGroup cs={{width: px2rem(300), justifyContent: 'end'}}>
             {props.start}
             <InputGroup.Input
               placeholder={placeholder}

@@ -1,21 +1,25 @@
 name: Major Release
 
 on:
-  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: write
 
 jobs:
   release-major:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
-          fetch-depth: 0 # Needed to do a proper push
+          fetch-depth: 0
 
       # Update support to point to the current major version
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Push current master to support
+        uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c # v1.3.0
         with:
           github_token: ${{ secrets.GH_RW_TOKEN }}
           branch: support
@@ -25,37 +29,57 @@ jobs:
       # to use it for updating dist-tag on support branch.
       - name: Get previous tag
         id: previous-tag
-        run: echo "::set-output name=tag::$(node -p 'require("./lerna.json").version')"
+        run: echo "tag=$(node -p 'require("./lerna.json").version')" >> $GITHUB_OUTPUT
 
       # Pull changes from prerelease/major into master.
       # Changes will be pushed with a release commit
       - name: Pull changes >> prerelease/major -> master
         run: git pull origin prerelease/major
 
-      - uses: Workday/canvas-kit-actions/install@v1
+      - uses: Workday/canvas-kit-actions/install@v2
         with:
-          node_version: 18.x
+          node_version: 24.x
+
+      - name: Clear auth token for OIDC
+        run: echo "NODE_AUTH_TOKEN=" >> $GITHUB_ENV
+
+      - name: Upgrade npm for OIDC
+        run: npm install -g npm@11.11.0
+
+      - name: Configure npm registry
+        run: npm config set registry https://registry.npmjs.org/
 
       # Run the release job to publish the next major version to npm
-      - uses: Workday/canvas-kit-actions/release@v1
+      - uses: Workday/canvas-kit-actions/release@v2
+        id: release
+        continue-on-error: true
         with:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           gh_rw_token: ${{ secrets.GH_RW_TOKEN }}
-          publish_token: ${{ secrets.NPM_CI_PUBLISH_TOKEN }}
           chromatic_project_token: ${{ secrets.CHROMATIC_APP_CODE }}
           version: 'major'
           toRef: 'prerelease/major'
 
+      ## See release.yml: finish any packages a failed lerna publish left unpublished.
+      - name: Publish remaining packages
+        id: publish-remaining
+        if: steps.release.outcome == 'failure'
+        run: yarn publish:from-package -- --dist-tag latest --require-unpublished
+
+      - name: Verify npm publish completed
+        if: steps.release.outcome == 'failure' && steps.publish-remaining.outcome != 'success'
+        run: exit 1
+
       # Update prerelease/minor to point to the next major release.
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Push to prerelease/minor
+        uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c # v1.3.0
         with:
           github_token: ${{ secrets.GH_RW_TOKEN }}
           branch: prerelease/minor
 
       # Update prerelease/major with the changes from prerelease/minor which include the major release version bump.
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Push to prerelease/major
+        uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c # v1.3.0
         with:
           github_token: ${{ secrets.GH_RW_TOKEN }}
           branch: prerelease/major
@@ -64,6 +88,14 @@ jobs:
       - name: Update support dist tag
         run: node utils/dist-tag.mjs
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_CI_PUBLISH_TOKEN }}
           DIST_TAG: 'support'
           VERSION: ${{ steps.previous-tag.outputs.tag }}
+
+      - uses: Workday/canvas-kit-actions/report-failure@v2
+        if: failure()
+        with:
+          slackWebhook: ${{ secrets.SLACK_WEBHOOK }}
+          slackMessage: |
+            Major release job failed. If npm publish was recovered but branch updates did not
+            run, manually push master to prerelease/minor and prerelease/major and update the
+            support dist-tag. See error logs for details.

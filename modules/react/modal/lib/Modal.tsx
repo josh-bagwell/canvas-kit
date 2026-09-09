@@ -1,12 +1,13 @@
-import {createContainer, ExtractProps} from '@workday/canvas-kit-react/common';
+import {ExtractProps, createContainer} from '@workday/canvas-kit-react/common';
 import {Dialog} from '@workday/canvas-kit-react/dialog';
 import {Popup} from '@workday/canvas-kit-react/popup';
-import {ModalOverlay} from './ModalOverlay';
+
+import {ModalBody} from './ModalBody';
 import {ModalCard} from './ModalCard';
-import {useModalModel} from './hooks';
 import {ModalHeading} from './ModalHeading';
 import {ModalOverflowOverlay} from './ModalOverflowOverlay';
-import {ModalBody} from './ModalBody';
+import {ModalOverlay} from './ModalOverlay';
+import {useModalModel} from './hooks';
 
 /**
  * This component is the container component and does not render any semantic elements. It provides
@@ -91,6 +92,12 @@ export const Modal = createContainer()({
      * full body overflow is desired.
      */
     OverflowOverlay: ModalOverflowOverlay,
+    /**
+     * A `Modal.ButtonGroup` component styled with {@link popupButtonGroupStencil}. It is used to
+     * group buttons within a modal and can place buttons at the start, center, or end of the
+     * container.
+     */
+    ButtonGroup: Popup.ButtonGroup,
   },
 })<ExtractProps<typeof Dialog, never>>(elemProps => {
   return <>{elemProps.children}</>;
